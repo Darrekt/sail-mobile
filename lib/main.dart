@@ -47,6 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text("Todo: scrolling"),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: PersistentTabView(
         context,
         controller: _controller,
