@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
-import 'package:spark/AlbumScreen.dart';
-import 'package:spark/HomeScreen.dart';
-import 'package:spark/OffersScreen.dart';
+import 'package:spark/screens/AlbumScreen.dart';
+import 'package:spark/screens/HomeScreen.dart';
+import 'package:spark/screens/OffersScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Spark',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -27,13 +27,13 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.cyan,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -43,8 +43,6 @@ class MyHomePage extends StatefulWidget {
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
-
-  final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -97,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       PersistentBottomNavBarItem(
         icon: Icon(Icons.local_offer),
         title: ("Offers"),
-        activeColorPrimary: Colors.teal,
+        activeColorPrimary: Colors.cyan,
         inactiveColorPrimary: Colors.grey,
         // routeAndNavigatorSettings: RouteAndNavigatorSettings(
         //   initialRoute: '/',
@@ -119,11 +117,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
       body: PersistentTabView(
         context,
         controller: _controller,
