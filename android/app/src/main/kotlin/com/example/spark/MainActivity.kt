@@ -1,4 +1,4 @@
-package com.example.spark
+package com.dariadev.spark
 
 import io.flutter.embedding.android.FlutterActivity
 
