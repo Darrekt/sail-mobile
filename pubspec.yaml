@@ -27,6 +27,8 @@ dependencies:
   persistent_bottom_nav_bar: ^4.0.2
   firebase_core: "^1.4.0"
   sleek_circular_slider : ^2.0.1
+  firebase_auth: "^3.0.1"
+  flutter_login: ^2.2.1
 
 
 dev_dependencies:
