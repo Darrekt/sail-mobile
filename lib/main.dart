@@ -8,7 +8,6 @@ import 'package:spark/screens/HomeScreen.dart';
 import 'package:spark/screens/LoadingScreen.dart';
 import 'package:spark/screens/OffersScreen.dart';
 import 'package:spark/screens/OnboardingScreen.dart';
-import 'package:splashscreen/splashscreen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

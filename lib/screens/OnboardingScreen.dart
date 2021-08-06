@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -8,56 +9,41 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PageViewModel makePVM(
+        Color? color, String assetPath, String title, String body) {
+      return PageViewModel(
+          pageColor: color,
+          mainImage: SvgPicture.asset(
+            assetPath,
+            height: MediaQuery.of(context).size.width * 0.6,
+            width: MediaQuery.of(context).size.width * 0.6,
+          ),
+          title: Text(title),
+          body: Text(body),
+          titleTextStyle: TextStyle(fontSize: 30, color: Colors.black),
+          bodyTextStyle: TextStyle(fontSize: 18, color: Colors.black));
+    }
+
     return IntroViewsFlutter(
       [
-        PageViewModel(
-          pageColor: Colors.tealAccent,
-          iconImageAssetPath: 'assets/taxi-driver.png',
-          body: Text(
-            "We're here to make being apart a litte less painful.",
-          ),
-          title: Text("Welcome!"),
-          mainImage: Image.asset(
-            'assets/taxi.png',
-            height: 285.0,
-            width: 285.0,
-            alignment: Alignment.center,
-          ),
-          titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.black),
-          bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.black),
+        makePVM(
+          Colors.teal,
+          'assets/hearts.svg',
+          'Welcome!',
+          "We're here to make being apart a little less painful.",
         ),
-        PageViewModel(
-          pageColor: Colors.tealAccent,
-          iconImageAssetPath: 'assets/taxi-driver.png',
-          body: Text(
-            "We're here to make being apart a litte less painful.",
-          ),
-          title: Text("Welcome!"),
-          mainImage: Image.asset(
-            'assets/taxi.png',
-            height: 285.0,
-            width: 285.0,
-            alignment: Alignment.center,
-          ),
-          titleTextStyle: TextStyle(color: Colors.black),
-          bodyTextStyle: TextStyle(color: Colors.black),
+        makePVM(
+          Colors.tealAccent[400],
+          'assets/love.svg',
+          'Share important moments!',
+          "Use our timeline feature to never forget a special moment again, or use Google photos to create shared albums!",
         ),
-        PageViewModel(
-          pageColor: Colors.tealAccent,
-          iconImageAssetPath: 'assets/taxi-driver.png',
-          body: Text(
-            "We're here to make being apart a litte less painful.",
-          ),
-          title: Text("Welcome!"),
-          mainImage: Image.asset(
-            'assets/taxi.png',
-            height: 285.0,
-            width: 285.0,
-            alignment: Alignment.center,
-          ),
-          titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.black),
-          bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.black),
-        )
+        makePVM(
+          Colors.tealAccent,
+          'assets/love-letter.svg',
+          'See each other sooner!',
+          "Our reunion feature uses robots to bring your discounts on tickets to each others' cities!",
+        ),
       ],
       onTapDoneButton: setOnboardingDone,
       showSkipButton: true,
