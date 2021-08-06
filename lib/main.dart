@@ -1,12 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:spark/components/navigation/navbar.dart';
 import 'package:spark/screens/AlbumScreen.dart';
+import 'package:spark/screens/ErrorScreen.dart';
 import 'package:spark/screens/HomeScreen.dart';
+import 'package:spark/screens/LoadingScreen.dart';
 import 'package:spark/screens/OffersScreen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
+}
+
+class App extends StatefulWidget {
+  App({Key? key}) : super(key: key);
+
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  final Future<FirebaseApp> _initialisation = Firebase.initializeApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _initialisation,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return ErrorScreen();
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            return MyApp();
+          }
+          return LoadingScreen();
+        });
+  }
 }
 
 class MyApp extends StatelessWidget {
