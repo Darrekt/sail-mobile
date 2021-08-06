@@ -7,10 +7,12 @@ import 'package:spark/screens/ErrorScreen.dart';
 import 'package:spark/screens/HomeScreen.dart';
 import 'package:spark/screens/LoadingScreen.dart';
 import 'package:spark/screens/OffersScreen.dart';
+import 'package:spark/screens/OnboardingScreen.dart';
+import 'package:splashscreen/splashscreen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(App());
 }
 
 class App extends StatefulWidget {
@@ -63,6 +65,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _hideNavBar = false;
+  bool _onboardingDone = false;
   PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
 
@@ -74,52 +77,62 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
   }
 
+  void _setOnboardingDone() => {
+        setState(() {
+          _onboardingDone = true;
+        })
+      };
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text("Todo: scrolling"),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      body: PersistentTabView(
-        context,
-        controller: _controller,
-        screens: _buildScreens(),
-        items: makeNavbarItems(),
-        confineInSafeArea: true,
-        backgroundColor: Colors.white,
-        handleAndroidBackButtonPress: true,
-        resizeToAvoidBottomInset: true,
-        stateManagement: true,
-        navBarHeight: MediaQuery.of(context).viewInsets.bottom > 0
-            ? 0.0
-            : kBottomNavigationBarHeight,
-        hideNavigationBarWhenKeyboardShows: true,
-        margin: EdgeInsets.all(0.0),
-        popActionScreens: PopActionScreensType.all,
-        bottomScreenMargin: 0.0,
-        // selectedTabScreenContext: (context) {
-        //   testContext = context;
-        // },
-        hideNavigationBar: _hideNavBar,
-        decoration: NavBarDecoration(
-            colorBehindNavBar: Colors.indigo,
-            borderRadius: BorderRadius.circular(20.0)),
-        popAllScreensOnTapOfSelectedTab: true,
-        itemAnimationProperties: ItemAnimationProperties(
-          duration: Duration(milliseconds: 200),
-          curve: Curves.ease,
-        ),
-        screenTransitionAnimation: ScreenTransitionAnimation(
-          animateTabTransition: true,
-          curve: Curves.ease,
-          duration: Duration(milliseconds: 200),
-        ),
-        navBarStyle:
-            NavBarStyle.style12, // Choose the nav bar style with this property
-      ),
-    );
+    return _onboardingDone
+        ? Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              title: Text("Todo: scrolling"),
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+            ),
+            body: PersistentTabView(
+              context,
+              controller: _controller,
+              screens: _buildScreens(),
+              items: makeNavbarItems(),
+              confineInSafeArea: true,
+              backgroundColor: Colors.white,
+              handleAndroidBackButtonPress: true,
+              resizeToAvoidBottomInset: true,
+              stateManagement: true,
+              navBarHeight: MediaQuery.of(context).viewInsets.bottom > 0
+                  ? 0.0
+                  : kBottomNavigationBarHeight,
+              hideNavigationBarWhenKeyboardShows: true,
+              margin: EdgeInsets.all(0.0),
+              popActionScreens: PopActionScreensType.all,
+              bottomScreenMargin: 0.0,
+              // selectedTabScreenContext: (context) {
+              //   testContext = context;
+              // },
+              hideNavigationBar: _hideNavBar,
+              decoration: NavBarDecoration(
+                  colorBehindNavBar: Colors.indigo,
+                  borderRadius: BorderRadius.circular(20.0)),
+              popAllScreensOnTapOfSelectedTab: true,
+              itemAnimationProperties: ItemAnimationProperties(
+                duration: Duration(milliseconds: 200),
+                curve: Curves.ease,
+              ),
+              screenTransitionAnimation: ScreenTransitionAnimation(
+                animateTabTransition: true,
+                curve: Curves.ease,
+                duration: Duration(milliseconds: 200),
+              ),
+              navBarStyle: NavBarStyle
+                  .style12, // Choose the nav bar style with this property
+            ),
+          )
+        : OnboardingScreen(
+            setOnboardingDone: _setOnboardingDone,
+          );
   }
 }
