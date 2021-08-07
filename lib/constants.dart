@@ -1,0 +1,1 @@
+const SHARED_PREFS_ONBOARDING_STATUS_KEY = "onboardingDone";

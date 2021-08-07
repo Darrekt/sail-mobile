@@ -60,6 +60,5 @@ class OnboardingScreen extends StatelessWidget {
         fontFamily: 'Regular',
       ),
     );
-    ;
   }
 }
