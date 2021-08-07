@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({Key? key, required this.setOnboardingDone})
@@ -15,11 +16,11 @@ class OnboardingScreen extends StatelessWidget {
           pageColor: color,
           mainImage: SvgPicture.asset(
             assetPath,
-            height: MediaQuery.of(context).size.width * 0.6,
-            width: MediaQuery.of(context).size.width * 0.6,
+            height: MediaQuery.of(context).size.width * 0.5,
+            width: MediaQuery.of(context).size.width * 0.5,
           ),
-          title: Text(title),
-          body: Text(body),
+          title: AutoSizeText(title),
+          body: AutoSizeText(body),
           titleTextStyle: TextStyle(fontSize: 30, color: Colors.black),
           bodyTextStyle: TextStyle(fontSize: 18, color: Colors.black));
     }
@@ -42,7 +43,13 @@ class OnboardingScreen extends StatelessWidget {
           Colors.tealAccent,
           'assets/love-letter.svg',
           'See each other sooner!',
-          "Our reunion feature uses robots to bring your discounts on tickets to each others' cities!",
+          "Our reunion feature uses robots to bring you discounts on tickets to each others' cities!",
+        ),
+        makePVM(
+          Colors.tealAccent,
+          'assets/love-letter.svg',
+          'Get started!',
+          "We'll need you to sign in and then follow the instructions to pair with your partner.",
         ),
       ],
       onTapDoneButton: setOnboardingDone,

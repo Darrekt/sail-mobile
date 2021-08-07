@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:spark/components/navigation/navbar.dart';
 import 'package:spark/screens/AlbumScreen.dart';
@@ -11,17 +12,17 @@ import 'package:spark/screens/OnboardingScreen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(App());
+  runApp(AppInit());
 }
 
-class App extends StatefulWidget {
-  App({Key? key}) : super(key: key);
+class AppInit extends StatefulWidget {
+  AppInit({Key? key}) : super(key: key);
 
   @override
-  _AppState createState() => _AppState();
+  _AppInitState createState() => _AppInitState();
 }
 
-class _AppState extends State<App> {
+class _AppInitState extends State<AppInit> {
   final Future<FirebaseApp> _initialisation = Firebase.initializeApp();
 
   @override
@@ -33,16 +34,14 @@ class _AppState extends State<App> {
             return ErrorScreen();
           }
           if (snapshot.connectionState == ConnectionState.done) {
-            return MyApp();
+            return SparkApp();
           }
           return LoadingScreen();
         });
   }
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-
+class SparkApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -63,18 +62,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool _hideNavBar = false;
   bool _onboardingDone = false;
   PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
-
-  List<Widget> _buildScreens() {
-    return [
-      HomeScreen(),
-      AlbumScreen(),
-      OffersScreen(),
-    ];
-  }
 
   void _setOnboardingDone() => {
         setState(() {
@@ -95,7 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
             body: PersistentTabView(
               context,
               controller: _controller,
-              screens: _buildScreens(),
+              screens: [
+                HomeScreen(),
+                AlbumScreen(),
+                OffersScreen(),
+              ],
               items: makeNavbarItems(),
               confineInSafeArea: true,
               backgroundColor: Colors.white,
@@ -112,7 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
               // selectedTabScreenContext: (context) {
               //   testContext = context;
               // },
-              hideNavigationBar: _hideNavBar,
               decoration: NavBarDecoration(
                   colorBehindNavBar: Colors.indigo,
                   borderRadius: BorderRadius.circular(20.0)),
