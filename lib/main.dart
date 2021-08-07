@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,60 +24,12 @@ class SparkApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.cyan,
       ),
-      home: OnboardingCheck(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SparkHome(),
+        '/onboarding': (context) => OnboardingScreen(),
+      },
     );
-  }
-}
-
-class OnboardingCheck extends StatefulWidget {
-  OnboardingCheck({Key? key}) : super(key: key);
-
-  @override
-  _OnboardingCheckState createState() => _OnboardingCheckState();
-}
-
-class _OnboardingCheckState extends State<OnboardingCheck> {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  late Future<bool> _onboardingDone;
-
-  @override
-  void initState() {
-    super.initState();
-    _onboardingDone = _prefs.then((SharedPreferences prefs) {
-      return (prefs.getBool(SHARED_PREFS_ONBOARDING_STATUS_KEY) ?? false);
-    });
-  }
-
-  void _setOnboardingDone() async {
-    final SharedPreferences prefs = await _prefs;
-    setState(() {
-      _onboardingDone = prefs
-          .setBool(SHARED_PREFS_ONBOARDING_STATUS_KEY, true)
-          .then((bool success) {
-        log("Completed onboarding!");
-        return success;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _onboardingDone,
-        builder: (context, AsyncSnapshot<bool> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return const CircularProgressIndicator();
-            default:
-              if (snapshot.hasError) {
-                return ErrorScreen(error: snapshot.error);
-              } else {
-                return snapshot.data ?? false
-                    ? SparkHome()
-                    : OnboardingScreen(setOnboardingDone: _setOnboardingDone);
-              }
-          }
-        });
   }
 }
 
@@ -90,9 +41,19 @@ class SparkHome extends StatefulWidget {
 }
 
 class _SparkHomeState extends State<SparkHome> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final Future<FirebaseApp> _initialisation = Firebase.initializeApp();
   PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _prefs.then((SharedPreferences prefs) {
+      if (!(prefs.getBool(SHARED_PREFS_ONBOARDING_STATUS_KEY) ?? false))
+        Navigator.pushNamed(context, '/onboarding');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +70,33 @@ class _SparkHomeState extends State<SparkHome> {
                 title: Text("Todo: scrolling"),
                 elevation: 0,
                 backgroundColor: Colors.transparent,
+              ),
+              drawer: Drawer(
+                child: ListView(
+                  // Important: Remove any padding from the ListView.
+                  padding: EdgeInsets.zero,
+                  children: [
+                    const DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                      ),
+                      child: Text('Drawer Header'),
+                    ),
+                    ListTile(
+                      title: const Text('Go to onboarding'),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/onboarding');
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Clear onboarding key'),
+                      onTap: () {
+                        // Update the state of the app.
+                        // ...
+                      },
+                    ),
+                  ],
+                ),
               ),
               body: PersistentTabView(
                 context,

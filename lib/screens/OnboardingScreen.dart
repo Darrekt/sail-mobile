@@ -1,12 +1,32 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spark/constants.dart';
 
-class OnboardingScreen extends StatelessWidget {
-  const OnboardingScreen({Key? key, required this.setOnboardingDone})
-      : super(key: key);
-  final VoidCallback setOnboardingDone;
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({Key? key}) : super(key: key);
+
+  @override
+  _OnboardingScreenState createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  void _setOnboardingDone({bool value = true}) async {
+    final SharedPreferences prefs = await _prefs;
+    prefs
+        .setBool(SHARED_PREFS_ONBOARDING_STATUS_KEY, value)
+        .then((bool success) {
+      log("Completed onboarding!");
+      Navigator.pop(context);
+      return success;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +72,7 @@ class OnboardingScreen extends StatelessWidget {
           "We'll need you to sign in and then follow the instructions to pair with your partner.",
         ),
       ],
-      onTapDoneButton: setOnboardingDone,
+      onTapDoneButton: _setOnboardingDone,
       showSkipButton: true,
       pageButtonTextStyles: TextStyle(
         color: Colors.black,
