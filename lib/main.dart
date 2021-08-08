@@ -127,6 +127,13 @@ class _SparkHomeState extends State<SparkHome> {
                 // ...
               },
             ),
+            ListTile(
+              title: const Text('Sign out'),
+              onTap: () {
+                _signOut();
+                Navigator.popAndPushNamed(context, '/login');
+              },
+            ),
           ],
         ),
       ),
@@ -171,6 +178,10 @@ class _SparkHomeState extends State<SparkHome> {
             NavBarStyle.style12, // Choose the nav bar style with this property
       ),
     );
+  }
+
+  void _signOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 
   @override
