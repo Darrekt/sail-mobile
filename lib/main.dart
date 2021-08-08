@@ -55,6 +55,7 @@ class _SparkAppState extends State<SparkApp> {
                       setLoggedIn: _setLoggedIn,
                     ),
                 '/login': (context) => LoginScreen(),
+                '/signup': (context) => LoginScreen(),
                 '/onboarding': (context) => OnboardingScreen(),
               },
             );
