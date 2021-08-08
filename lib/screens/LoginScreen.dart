@@ -35,47 +35,67 @@ class _EmailFormState extends State<EmailForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            child: const Text('Sign in'),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                alignment: Alignment.center,
+                child: const Text(
+                  'Sign in',
+                  style: TextStyle(
+                    fontSize: 24.0,
+                  ),
+                ),
+              ),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
+              ),
+              Container(
+                padding: const EdgeInsets.all(16),
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await _signInWithEmailAndPassword();
+                    } else {
+                      log("invalid form???");
+                    }
+                  },
+                  child: const Text("Log In"),
+                  style: ElevatedButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                    padding: const EdgeInsets.all(16),
+                    shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: 'Email'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: 'Password'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your password';
-              }
-              return null;
-            },
-          ),
-          Container(
-            alignment: Alignment.center,
-            child: ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  await _signInWithEmailAndPassword();
-                } else {
-                  log("invalid form???");
-                }
-              },
-              child: const Text("Log In"),
-            ),
-          )
-        ],
+        ),
       ),
     );
   }
