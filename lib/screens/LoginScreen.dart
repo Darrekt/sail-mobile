@@ -3,151 +3,23 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  LoginScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: EmailForm(),
-      ),
-    );
-  }
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class EmailForm extends StatefulWidget {
-  EmailForm({Key? key}) : super(key: key);
-
-  @override
-  _EmailFormState createState() => _EmailFormState();
-}
-
-class _EmailFormState extends State<EmailForm> {
+class _LoginScreenState extends State<LoginScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    bool loginNotSignup = ModalRoute.of(context)!.settings.name! == '/login';
-    // log("fucken here\n\n");
-    // log(ModalRoute.of(context)!.settings.name!);
-    // log("fucken done\n\n");
-
-    String titleStr = loginNotSignup ? 'Sign In' : 'Register';
-    var title = Container(
-      padding: const EdgeInsets.all(16),
-      alignment: Alignment.center,
-      child: Text(
-        titleStr,
-        style: TextStyle(
-          fontSize: 24.0,
-        ),
-      ),
-    );
-
-    var emailField = TextFormField(
-      controller: _emailController,
-      decoration: const InputDecoration(labelText: 'Email'),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter your email';
-        }
-        return null;
-      },
-    );
-    var passwordField = TextFormField(
-      controller: _passwordController,
-      decoration: const InputDecoration(labelText: 'Password'),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter your password';
-        }
-        return null;
-      },
-    );
-    var confirmPasswordField = TextFormField(
-      controller: _confirmPasswordController,
-      decoration: const InputDecoration(labelText: 'Confirm Password'),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please confirm your password';
-        }
-        return null;
-      },
-    );
-
-    String buttonStr = loginNotSignup ? 'Sign Me In' : 'Register Me';
-    var completeButton = Container(
-      padding: const EdgeInsets.all(16),
-      alignment: Alignment.center,
-      child: ElevatedButton(
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            if (loginNotSignup) {
-              await _signInWithEmailAndPassword();
-            } else {
-              await _createUserWithEmailAndPassword();
-            }
-          } else {
-            log("invalid form???");
-          }
-        },
-        child: Text(buttonStr),
-        style: ElevatedButton.styleFrom(
-          textStyle: const TextStyle(fontSize: 20),
-          padding: const EdgeInsets.all(16),
-          shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(20.0),
-          ),
-        ),
-      ),
-    );
-
-    var signupPageButton = Container(
-      alignment: Alignment.center,
-      child: TextButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/signup');
-        },
-        child: Text("New to Spark? SIGN UP"),
-        style: TextButton.styleFrom(textStyle: const TextStyle(fontSize: 16)),
-      ),
-    );
-    var renderLogin = [
-      title,
-      emailField,
-      passwordField,
-      completeButton,
-      signupPageButton
-    ];
-    var renderSignup = [
-      title,
-      emailField,
-      passwordField,
-      confirmPasswordField,
-      completeButton,
-    ];
-    return Form(
-      key: _formKey,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: loginNotSignup ? renderLogin : renderSignup,
-          ),
-        ),
-      ),
-    );
-  }
+  late FocusNode _emailFocus = FocusNode();
+  late FocusNode _pwFocus = FocusNode();
+  late FocusNode _cpwFocus = FocusNode();
 
   @override
   void dispose() {
@@ -177,15 +49,11 @@ class _EmailFormState extends State<EmailForm> {
 
   Future<void> _createUserWithEmailAndPassword() async {
     try {
-      if (_passwordController.text == _confirmPasswordController.text) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-        Navigator.popAndPushNamed(context, '/login');
-      } else {
-        log('Please ensure the password is the same for both fields.');
-      }
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      Navigator.popAndPushNamed(context, '/login');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         log('The password provided is too weak.');
@@ -195,5 +63,128 @@ class _EmailFormState extends State<EmailForm> {
     } catch (e) {
       log(e.toString());
     }
+  }
+
+  Future<void> _submitForm(bool loginNotSignup) async {
+    if (_formKey.currentState!.validate()) {
+      if (loginNotSignup) {
+        await _signInWithEmailAndPassword();
+      } else {
+        await _createUserWithEmailAndPassword();
+      }
+    } else {
+      log("invalid form???");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool loginNotSignup = ModalRoute.of(context)!.settings.name! == '/login';
+
+    final Widget heroLogo = Padding(
+        padding: EdgeInsets.symmetric(
+            vertical: MediaQuery.of(context).size.height * 0.07),
+        child: Center(
+            child: FlutterLogo(size: MediaQuery.of(context).size.width * 0.4)));
+
+    final Widget emailField = TextFormField(
+      controller: _emailController,
+      decoration: const InputDecoration(labelText: 'Email'),
+      focusNode: _emailFocus,
+      onEditingComplete: _pwFocus.requestFocus,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        }
+        return null;
+      },
+    );
+    final Widget passwordField = TextFormField(
+      controller: _passwordController,
+      decoration: const InputDecoration(labelText: 'Password'),
+      obscureText: true,
+      focusNode: _pwFocus,
+      onEditingComplete: () => loginNotSignup
+          ? _submitForm(loginNotSignup)
+          : _cpwFocus.requestFocus(),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your password';
+        }
+        return null;
+      },
+    );
+    final Widget confirmPasswordField = TextFormField(
+      controller: _confirmPasswordController,
+      decoration: const InputDecoration(labelText: 'Confirm Password'),
+      focusNode: _cpwFocus,
+      onEditingComplete: () => _submitForm(loginNotSignup),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please confirm your password';
+        } else if (value != _passwordController.text) {
+          return 'Non-matching password';
+        }
+        return null;
+      },
+    );
+    final Widget completeButton = Container(
+      padding: const EdgeInsets.all(16),
+      alignment: Alignment.center,
+      child: ElevatedButton(
+        onPressed: () => _submitForm(loginNotSignup),
+        child: Text(loginNotSignup ? 'Login' : 'Register'),
+        style: ElevatedButton.styleFrom(
+          textStyle: const TextStyle(fontSize: 20),
+          padding: const EdgeInsets.all(16),
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(20.0),
+          ),
+        ),
+      ),
+    );
+
+    final Widget signupPageButton = Container(
+      alignment: Alignment.center,
+      child: TextButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/signup');
+        },
+        child: Text("Sign up"),
+        style: TextButton.styleFrom(textStyle: const TextStyle(fontSize: 16)),
+      ),
+    );
+
+    List<Widget> renderLogin = [
+      heroLogo,
+      emailField,
+      passwordField,
+      completeButton,
+      signupPageButton,
+    ];
+    List<Widget> renderSignup = [
+      heroLogo,
+      emailField,
+      passwordField,
+      confirmPasswordField,
+      completeButton,
+    ];
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Form(
+        key: _formKey,
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: loginNotSignup ? renderLogin : renderSignup,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
