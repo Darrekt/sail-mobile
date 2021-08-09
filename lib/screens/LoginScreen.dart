@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .user;
       if (user != null) {
         log("user logged in"); // move to home from here
-        Navigator.popAndPushNamed(context, '/');
+        Navigator.pop(context);
       } else {
         log("user null??");
       }
@@ -99,6 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return null;
       },
     );
+
     final Widget passwordField = TextFormField(
       controller: _passwordController,
       decoration: const InputDecoration(labelText: 'Password'),
@@ -114,6 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return null;
       },
     );
+
     final Widget confirmPasswordField = TextFormField(
       controller: _confirmPasswordController,
       decoration: const InputDecoration(labelText: 'Confirm Password'),
@@ -128,17 +131,25 @@ class _LoginScreenState extends State<LoginScreen> {
         return null;
       },
     );
+
     final Widget completeButton = Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(
+          vertical: MediaQuery.of(context).size.height * 0.03),
       alignment: Alignment.center,
       child: ElevatedButton(
         onPressed: () => _submitForm(loginNotSignup),
-        child: Text(loginNotSignup ? 'Login' : 'Register'),
+        child: AutoSizeText(
+          loginNotSignup ? 'Login' : 'Register',
+          minFontSize: 16,
+        ),
         style: ElevatedButton.styleFrom(
-          textStyle: const TextStyle(fontSize: 20),
-          padding: const EdgeInsets.all(16),
+          minimumSize: Size(
+            MediaQuery.of(context).size.width * 0.4,
+            MediaQuery.of(context).size.height * 0.02,
+          ),
+          padding: const EdgeInsets.all(10),
           shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(20.0),
+            borderRadius: new BorderRadius.circular(8.0),
           ),
         ),
       ),
@@ -172,6 +183,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: !loginNotSignup,
+        elevation: 0,
+      ),
       body: Form(
         key: _formKey,
         child: Card(
