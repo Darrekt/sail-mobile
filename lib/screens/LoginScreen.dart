@@ -1,7 +1,9 @@
 import 'dart:developer';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -154,23 +156,52 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
-    final Widget signupPageButton = Container(
-      alignment: Alignment.center,
-      child: TextButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/signup');
-        },
-        child: Text("Sign up"),
-        style: TextButton.styleFrom(textStyle: const TextStyle(fontSize: 16)),
-      ),
-    );
+    //TODO: Turn into mini button row. Fuck these libraries.
+    final Widget socialSignInButtonBar = Container(
+        width: MediaQuery.of(context).size.width * 0.55,
+        child: Column(
+          children: [
+            SignInButton(
+              Buttons.Facebook,
+              onPressed: () {},
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            ),
+            SignInButton(
+              Buttons.Google,
+              onPressed: () {},
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            ),
+            // SignInWithAppleButton(onPressed: () {}),
+            SignInButton(
+              Buttons.AppleDark,
+              onPressed: () {},
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            ),
+            SizedBox(height: 20),
+            SignInButtonBuilder(
+              elevation: 2.0,
+              key: ValueKey("Email"),
+              text: 'Sign up with Email',
+              icon: Icons.email,
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup');
+              },
+              backgroundColor: Colors.grey[700]!,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            ),
+          ],
+        ));
 
     List<Widget> renderLogin = [
       heroLogo,
       emailField,
       passwordField,
       completeButton,
-      signupPageButton,
+      socialSignInButtonBar,
     ];
     List<Widget> renderSignup = [
       heroLogo,
@@ -180,22 +211,24 @@ class _LoginScreenState extends State<LoginScreen> {
       completeButton,
     ];
 
+    //FIXME: Remove elevated border surrounding the scrollview. Get dart devtools working to debug.
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: !loginNotSignup,
         elevation: 0,
       ),
-      body: Form(
-        key: _formKey,
-        child: Card(
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: loginNotSignup ? renderLogin : renderSignup,
             ),
           ),
