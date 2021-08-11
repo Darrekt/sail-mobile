@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -79,18 +80,38 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<UserCredential> _signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    Navigator.of(context).pop();
+    // Once signed in, return the UserCredential
+    return await _auth.signInWithCredential(credential);
+  }
+
   Future<UserCredential> signInWithFacebook() async {
     // Trigger the sign-in flow
     final LoginResult loginResult = await FacebookAuth.instance.login();
 
-    // if (loginResult.status == LoginStatus.success) {
     // Create a credential from the access token
     final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
+    if (loginResult.status == LoginStatus.success) {
+      Navigator.of(context).pop();
+    }
     // Once signed in, return the UserCredential
     return _auth.signInWithCredential(facebookAuthCredential);
-    // }
   }
 
   @override
@@ -183,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SignInButton(
               Buttons.GoogleDark,
-              onPressed: () {},
+              onPressed: _signInWithGoogle,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(8.0))),
             ),
