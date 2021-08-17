@@ -1,1 +1,4 @@
 const SHARED_PREFS_ONBOARDING_STATUS_KEY = "onboardingDone";
+
+// Hero tags
+const HERO_TAG_DRAWER_PROFILE = "DRAWER_PROFILE_AVATAR";
