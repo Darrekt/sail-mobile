@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -23,12 +24,25 @@ class _LoginScreenState extends State<LoginScreen> {
   late FocusNode _emailFocus = FocusNode();
   late FocusNode _pwFocus = FocusNode();
   late FocusNode _cpwFocus = FocusNode();
+  late StreamSubscription<User?> _userSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _userSubscription =
+        FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null && ModalRoute.of(context)!.settings.name! == '/login')
+        Navigator.of(context).pop();
+    });
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _userSubscription.cancel();
     super.dispose();
   }
 
@@ -41,7 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
           .user;
       if (user != null) {
         log("user logged in"); // move to home from here
-        Navigator.pop(context);
       } else {
         log("user null??");
       }
@@ -94,7 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
       idToken: googleAuth.idToken,
     );
 
-    Navigator.of(context).pop();
     // Once signed in, return the UserCredential
     return await _auth.signInWithCredential(credential);
   }
@@ -107,9 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
-    if (loginResult.status == LoginStatus.success) {
-      Navigator.of(context).pop();
-    }
+    if (loginResult.status == LoginStatus.success) {}
     // Once signed in, return the UserCredential
     return _auth.signInWithCredential(facebookAuthCredential);
   }
