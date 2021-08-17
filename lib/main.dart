@@ -13,6 +13,7 @@ import 'package:spark/screens/LoginScreen.dart';
 import 'package:spark/screens/OffersScreen.dart';
 import 'package:spark/screens/OnboardingScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:spark/screens/home/HomeDrawer.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,13 +27,6 @@ class SparkApp extends StatefulWidget {
 
 class _SparkAppState extends State<SparkApp> {
   final Future<FirebaseApp> _initialisation = Firebase.initializeApp();
-  bool _loggedIn = false;
-
-  void _setLoggedIn(bool logged) {
-    setState(() {
-      this._loggedIn = logged;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +42,9 @@ class _SparkAppState extends State<SparkApp> {
               theme: ThemeData(
                 primarySwatch: Colors.cyan,
               ),
-              initialRoute: _loggedIn ? '/' : '/login',
+              initialRoute: '/',
               routes: {
-                '/': (context) => SparkHome(
-                      setLoggedIn: _setLoggedIn,
-                    ),
+                '/': (context) => SparkHome(),
                 '/login': (context) => LoginScreen(),
                 '/signup': (context) => LoginScreen(),
                 '/onboarding': (context) => OnboardingScreen(),
@@ -65,19 +57,17 @@ class _SparkAppState extends State<SparkApp> {
 }
 
 class SparkHome extends StatefulWidget {
-  SparkHome({Key? key, required this.setLoggedIn}) : super(key: key);
-  final void Function(bool) setLoggedIn;
+  SparkHome({Key? key}) : super(key: key);
 
   @override
   _SparkHomeState createState() => _SparkHomeState();
 }
 
 class _SparkHomeState extends State<SparkHome> {
-  StreamSubscription<User?> _userSubscription =
-      FirebaseAuth.instance.authStateChanges().listen((User? user) {});
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
+  late StreamSubscription<User?> _userSubscription;
 
   @override
   void initState() {
@@ -90,53 +80,22 @@ class _SparkHomeState extends State<SparkHome> {
 
     _userSubscription =
         FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      widget.setLoggedIn((user != null));
+      if (user == null) Navigator.pushNamed(context, '/login');
     });
+  }
+
+  @override
+  void dispose() {
+    _userSubscription.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text("Todo: scrolling"),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      drawer: Drawer(
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text('Drawer Header'),
-            ),
-            ListTile(
-              title: const Text('Go to onboarding'),
-              onTap: () {
-                Navigator.pushNamed(context, '/onboarding');
-              },
-            ),
-            ListTile(
-              title: const Text('Clear onboarding key'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-              },
-            ),
-            ListTile(
-              title: const Text('Sign out'),
-              onTap: () {
-                _signOut();
-                Navigator.popAndPushNamed(context, '/login');
-              },
-            ),
-          ],
-        ),
-      ),
+      // appBar: ,
+      drawer: HomeDrawer(),
       body: PersistentTabView(
         context,
         controller: _controller,
@@ -178,15 +137,5 @@ class _SparkHomeState extends State<SparkHome> {
             NavBarStyle.style12, // Choose the nav bar style with this property
       ),
     );
-  }
-
-  void _signOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
-  @override
-  void dispose() {
-    _userSubscription.cancel();
-    super.dispose();
   }
 }
