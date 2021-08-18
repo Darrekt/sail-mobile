@@ -11,7 +11,6 @@ class HomeScreen extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          title: Text("Spark"),
           elevation: 0,
           floating: true,
           backgroundColor: Colors.transparent,

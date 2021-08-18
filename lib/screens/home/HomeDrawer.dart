@@ -6,7 +6,8 @@ import 'package:spark/constants.dart';
 import 'package:spark/screens/home/ProfilePictureScreen.dart';
 
 class HomeDrawer extends StatelessWidget {
-  const HomeDrawer({Key? key}) : super(key: key);
+  HomeDrawer({Key? key}) : super(key: key);
+  final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,7 @@ class HomeDrawer extends StatelessWidget {
                     ),
                   ),
                   AutoSizeText(
-                    "Darrick Lau",
+                    _auth.currentUser?.displayName ?? "Anonymous",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   AutoSizeText(
@@ -75,7 +76,7 @@ class HomeDrawer extends StatelessWidget {
                     maxFontSize: 10,
                   ),
                   AutoSizeText(
-                    "jkricklau@gmail.com",
+                    _auth.currentUser?.email ?? "",
                     minFontSize: 8,
                     maxFontSize: 10,
                   )
