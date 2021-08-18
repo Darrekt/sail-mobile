@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +6,8 @@ import 'package:spark/components/util/SettingsGroup.dart';
 import 'package:spark/constants.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ProfilePictureScreen extends StatelessWidget {
-  ProfilePictureScreen({Key? key}) : super(key: key);
+class ProfilePicturePage extends StatelessWidget {
+  ProfilePicturePage({Key? key}) : super(key: key);
   final _auth = FirebaseAuth.instance;
   final _storage = FirebaseStorage.instance;
   final _picker = ImagePicker();
@@ -32,7 +30,7 @@ class ProfilePictureScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size _deviceDimensions = MediaQuery.of(context).size;
+    // final Size _deviceDimensions = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(

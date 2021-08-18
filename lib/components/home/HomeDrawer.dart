@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:spark/constants.dart';
-import 'package:spark/screens/home/ProfilePictureScreen.dart';
+import 'package:spark/pages/home/ProfilePicturePage.dart';
 
 class HomeDrawer extends StatelessWidget {
   HomeDrawer({Key? key}) : super(key: key);
@@ -11,7 +11,7 @@ class HomeDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size _deviceDimensions = MediaQuery.of(context).size;
+    // final Size _deviceDimensions = MediaQuery.of(context).size;
 
     final drawerItems = [
       ListTile(
@@ -53,7 +53,7 @@ class HomeDrawer extends StatelessWidget {
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return ProfilePictureScreen();
+                        return ProfilePicturePage();
                       }));
                     },
                     child: Padding(

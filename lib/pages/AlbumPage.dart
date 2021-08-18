@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AlbumScreen extends StatelessWidget {
-  const AlbumScreen({Key? key}) : super(key: key);
+class AlbumPage extends StatelessWidget {
+  const AlbumPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

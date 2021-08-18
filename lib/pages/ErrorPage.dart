@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
-class ErrorScreen extends StatelessWidget {
-  const ErrorScreen({Key? key, this.error}) : super(key: key);
+class ErrorPage extends StatelessWidget {
+  const ErrorPage({Key? key, this.error}) : super(key: key);
   final Object? error;
 
   @override

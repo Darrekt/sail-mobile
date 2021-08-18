@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:spark/components/navigation/navbar.dart';
 import 'package:spark/constants.dart';
-import 'package:spark/screens/AlbumScreen.dart';
-import 'package:spark/screens/ErrorScreen.dart';
-import 'package:spark/screens/HomeScreen.dart';
-import 'package:spark/screens/LoadingScreen.dart';
-import 'package:spark/screens/LoginScreen.dart';
-import 'package:spark/screens/OffersScreen.dart';
-import 'package:spark/screens/OnboardingScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:spark/screens/home/HomeDrawer.dart';
+import 'package:spark/components/home/HomeDrawer.dart';
+import 'package:spark/pages/AlbumPage.dart';
+import 'package:spark/pages/ErrorPage.dart';
+import 'package:spark/pages/HomePage.dart';
+import 'package:spark/pages/LoadingPage.dart';
+import 'package:spark/pages/LoginPage.dart';
+import 'package:spark/pages/OffersPage.dart';
+import 'package:spark/pages/OnboardingPage.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +34,7 @@ class _SparkAppState extends State<SparkApp> {
         future: _initialisation,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return ErrorScreen(error: snapshot.error);
+            return ErrorPage(error: snapshot.error);
           }
           if (snapshot.connectionState == ConnectionState.done) {
             return MaterialApp(
@@ -45,13 +45,13 @@ class _SparkAppState extends State<SparkApp> {
               initialRoute: '/',
               routes: {
                 '/': (context) => SparkHome(),
-                '/login': (context) => LoginScreen(),
-                '/signup': (context) => LoginScreen(),
-                '/onboarding': (context) => OnboardingScreen(),
+                '/login': (context) => LoginPage(),
+                '/signup': (context) => LoginPage(),
+                '/onboarding': (context) => OnboardingPage(),
               },
             );
           }
-          return LoadingScreen();
+          return LoadingPage();
         });
   }
 }
@@ -100,9 +100,9 @@ class _SparkHomeState extends State<SparkHome> {
         context,
         controller: _controller,
         screens: [
-          HomeScreen(),
-          AlbumScreen(),
-          OffersScreen(),
+          HomePage(),
+          AlbumPage(),
+          OffersPage(),
         ],
         items: makeNavbarItems(),
         confineInSafeArea: true,
