@@ -18,6 +18,7 @@ import 'package:spark/blocs/bloc_barrel.dart';
 
 Future<void> main() async {
   // TODO: Add an observer for debugging
+  Bloc.observer = SparkBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final AuthRepository authRepo = FirebaseAuthRepository();

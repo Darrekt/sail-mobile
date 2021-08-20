@@ -13,7 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({required AuthRepository auth})
       : _auth = auth,
-        super(Unauthenticated());
+        super(AppLoading());
 
   @override
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
