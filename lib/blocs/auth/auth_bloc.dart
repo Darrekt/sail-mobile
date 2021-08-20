@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:spark/blocs/auth/auth_barrel.dart';
-import 'package:spark/blocs/auth/auth_states.dart';
-import 'package:spark/repositories/settings/auth_repository.dart';
+import 'package:spark/repositories/auth/auth_repository.dart';
+import 'package:equatable/equatable.dart';
+
+part 'auth_event.dart';
+part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _auth;
@@ -42,9 +44,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Stream<AuthState> _mapAuthStateUpdatedToState(AuthStateUpdated event) async* {
     final User? user = event.payload;
     yield user == null ? Unauthenticated() : Authenticated(user);
-    // : event.user.displayName == null || event.user.email == null
-    //     ? Onboarding(event.user)
-    //     : Authenticated(event.user);
   }
 
   Stream<AuthState> _mapTryEmailSignInToState(TryEmailSignIn event) async* {

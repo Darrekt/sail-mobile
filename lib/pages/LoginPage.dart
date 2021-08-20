@@ -4,7 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:spark/blocs/auth/auth_barrel.dart';
+import 'package:spark/blocs/bloc_barrel.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
 
-          //TODO: Turn into mini button row. Fuck these libraries.
+          //TODO: Turn into mini button row. I hate these libraries.
           final Widget socialSignInButtonBar = Container(
               width: MediaQuery.of(context).size.width * 0.55,
               child: Column(

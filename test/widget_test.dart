@@ -8,11 +8,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spark/main.dart';
+import 'package:spark/repositories/auth/auth_repository.dart';
+import 'package:spark/repositories/auth/auth_repository_firebase.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(SparkApp());
+    final AuthRepository authRepository = FirebaseAuthRepository();
+    await tester.pumpWidget(SparkApp(
+      authRepository: authRepository,
+    ));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

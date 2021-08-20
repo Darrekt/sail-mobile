@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spark/blocs/auth/auth_barrel.dart';
+import 'package:spark/blocs/bloc_barrel.dart';
 import 'package:spark/components/util/SettingsGroup.dart';
 import 'package:spark/constants.dart';
 import 'package:image_picker/image_picker.dart';

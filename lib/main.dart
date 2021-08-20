@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
-import 'package:spark/blocs/auth/auth_barrel.dart';
 import 'package:spark/components/navigation/navbar.dart';
 import 'package:spark/constants.dart';
 import 'package:spark/components/home/HomeDrawer.dart';
@@ -13,8 +12,9 @@ import 'package:spark/pages/HomePage.dart';
 import 'package:spark/pages/LoginPage.dart';
 import 'package:spark/pages/OffersPage.dart';
 import 'package:spark/pages/OnboardingPage.dart';
-import 'package:spark/repositories/settings/auth_repository.dart';
-import 'package:spark/repositories/settings/auth_repository_firebase.dart';
+import 'package:spark/repositories/auth/auth_repository.dart';
+import 'package:spark/repositories/auth/auth_repository_firebase.dart';
+import 'package:spark/blocs/bloc_barrel.dart';
 
 Future<void> main() async {
   // TODO: Add an observer for debugging
