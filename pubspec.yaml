@@ -31,6 +31,7 @@ dependencies:
   flutter_facebook_auth: ^3.5.0
   sign_in_with_apple: ^3.0.0
   crypto: ^3.0.1
+  equatable: ^2.0.3
   flutter_svg: ^0.22.0
   shared_preferences: ^2.0.6
   auto_size_text: ^3.0.0-nullsafety.0
