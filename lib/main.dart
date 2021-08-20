@@ -1,58 +1,63 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:spark/blocs/auth/auth_barrel.dart';
 import 'package:spark/components/navigation/navbar.dart';
 import 'package:spark/constants.dart';
 import 'package:spark/components/home/HomeDrawer.dart';
 import 'package:spark/pages/AlbumPage.dart';
-import 'package:spark/pages/ErrorPage.dart';
 import 'package:spark/pages/HomePage.dart';
-import 'package:spark/pages/LoadingPage.dart';
 import 'package:spark/pages/LoginPage.dart';
 import 'package:spark/pages/OffersPage.dart';
 import 'package:spark/pages/OnboardingPage.dart';
+import 'package:spark/repositories/settings/auth_repository.dart';
+import 'package:spark/repositories/settings/auth_repository_firebase.dart';
 
-void main() {
+Future<void> main() async {
+  // TODO: Add an observer for debugging
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(SparkApp());
+  await Firebase.initializeApp();
+  final AuthRepository authRepo = FirebaseAuthRepository();
+  runApp(SparkApp(
+    authRepository: authRepo,
+  ));
 }
 
-class SparkApp extends StatefulWidget {
-  @override
-  _SparkAppState createState() => _SparkAppState();
-}
-
-class _SparkAppState extends State<SparkApp> {
-  final Future<FirebaseApp> _initialisation = Firebase.initializeApp();
+class SparkApp extends StatelessWidget {
+  SparkApp({Key? key, required AuthRepository authRepository})
+      : _authRepository = authRepository,
+        super(key: key);
+  final AuthRepository _authRepository;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _initialisation,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return ErrorPage(error: snapshot.error);
-          }
-          if (snapshot.connectionState == ConnectionState.done) {
-            return MaterialApp(
-              title: 'Spark',
-              theme: ThemeData(
-                primarySwatch: Colors.cyan,
-              ),
-              initialRoute: '/',
-              routes: {
-                '/': (context) => SparkHome(),
-                '/login': (context) => LoginPage(),
-                '/signup': (context) => LoginPage(),
-                '/onboarding': (context) => OnboardingPage(),
-              },
-            );
-          }
-          return LoadingPage();
-        });
+    return RepositoryProvider.value(
+      value: _authRepository,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(
+            lazy: false,
+            create: (_) => AuthBloc(auth: _authRepository)..add(AppStarted()),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'Spark',
+          theme: ThemeData(
+            primarySwatch: Colors.cyan,
+          ),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => SparkHome(),
+            '/login': (context) => LoginPage(),
+            '/signup': (context) => LoginPage(),
+            '/onboarding': (context) => OnboardingPage(),
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -67,7 +72,6 @@ class _SparkHomeState extends State<SparkHome> {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
-  late StreamSubscription<User?> _userSubscription;
 
   @override
   void initState() {
@@ -77,64 +81,58 @@ class _SparkHomeState extends State<SparkHome> {
       if (!(prefs.getBool(SHARED_PREFS_ONBOARDING_STATUS_KEY) ?? false))
         Navigator.pushNamed(context, '/onboarding');
     });
-
-    _userSubscription =
-        FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) Navigator.pushNamed(context, '/login');
-    });
-  }
-
-  @override
-  void dispose() {
-    _userSubscription.cancel();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      // appBar: ,
-      drawer: HomeDrawer(),
-      body: PersistentTabView(
-        context,
-        controller: _controller,
-        screens: [
-          HomePage(),
-          AlbumPage(),
-          OffersPage(),
-        ],
-        items: makeNavbarItems(),
-        confineInSafeArea: true,
-        backgroundColor: Colors.white,
-        handleAndroidBackButtonPress: true,
-        resizeToAvoidBottomInset: true,
-        stateManagement: true,
-        navBarHeight: MediaQuery.of(context).viewInsets.bottom > 0
-            ? 0.0
-            : kBottomNavigationBarHeight,
-        hideNavigationBarWhenKeyboardShows: true,
-        margin: EdgeInsets.all(0.0),
-        popActionScreens: PopActionScreensType.all,
-        bottomScreenMargin: 0.0,
-        // selectedTabScreenContext: (context) {
-        //   testContext = context;
-        // },
-        decoration: NavBarDecoration(
-            colorBehindNavBar: Colors.indigo,
-            borderRadius: BorderRadius.circular(20.0)),
-        popAllScreensOnTapOfSelectedTab: true,
-        itemAnimationProperties: ItemAnimationProperties(
-          duration: Duration(milliseconds: 200),
-          curve: Curves.ease,
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is Unauthenticated) Navigator.pushNamed(context, '/login');
+      },
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        // appBar: ,
+        drawer: HomeDrawer(),
+        body: PersistentTabView(
+          context,
+          controller: _controller,
+          screens: [
+            HomePage(),
+            AlbumPage(),
+            OffersPage(),
+          ],
+          items: makeNavbarItems(),
+          confineInSafeArea: true,
+          backgroundColor: Colors.white,
+          handleAndroidBackButtonPress: true,
+          resizeToAvoidBottomInset: true,
+          stateManagement: true,
+          navBarHeight: MediaQuery.of(context).viewInsets.bottom > 0
+              ? 0.0
+              : kBottomNavigationBarHeight,
+          hideNavigationBarWhenKeyboardShows: true,
+          margin: EdgeInsets.all(0.0),
+          popActionScreens: PopActionScreensType.all,
+          bottomScreenMargin: 0.0,
+          // selectedTabScreenContext: (context) {
+          //   testContext = context;
+          // },
+          decoration: NavBarDecoration(
+              colorBehindNavBar: Colors.indigo,
+              borderRadius: BorderRadius.circular(20.0)),
+          popAllScreensOnTapOfSelectedTab: true,
+          itemAnimationProperties: ItemAnimationProperties(
+            duration: Duration(milliseconds: 200),
+            curve: Curves.ease,
+          ),
+          screenTransitionAnimation: ScreenTransitionAnimation(
+            animateTabTransition: true,
+            curve: Curves.ease,
+            duration: Duration(milliseconds: 200),
+          ),
+          navBarStyle: NavBarStyle
+              .style12, // Choose the nav bar style with this property
         ),
-        screenTransitionAnimation: ScreenTransitionAnimation(
-          animateTabTransition: true,
-          curve: Curves.ease,
-          duration: Duration(milliseconds: 200),
-        ),
-        navBarStyle:
-            NavBarStyle.style12, // Choose the nav bar style with this property
       ),
     );
   }

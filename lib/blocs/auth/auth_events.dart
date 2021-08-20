@@ -8,6 +8,8 @@ abstract class AuthEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class AppStarted extends AuthEvent {}
+
 class AuthStateUpdated extends AuthEvent {
   final User? payload;
   AuthStateUpdated(this.payload);
@@ -17,6 +19,18 @@ class AuthStateUpdated extends AuthEvent {
 
   @override
   String toString() => "AuthStateUpdated { user: $payload }";
+}
+
+class TryEmailSignUp extends AuthEvent {
+  final String email;
+  final String password;
+  TryEmailSignUp(this.email, this.password);
+
+  @override
+  List<Object> get props => [email, password];
+
+  @override
+  String toString() => "TryEmailSignIn { email: $email, password: $password }";
 }
 
 class TryEmailSignIn extends AuthEvent {

@@ -36,7 +36,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (_userSubscription != null) _userSubscription!.cancel();
     _userSubscription =
         _auth.getUser().listen((update) => add(AuthStateUpdated(update)));
-    yield Unauthenticated();
+    yield AppLoading();
   }
 
   Stream<AuthState> _mapAuthStateUpdatedToState(AuthStateUpdated event) async* {
