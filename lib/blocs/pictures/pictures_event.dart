@@ -6,3 +6,18 @@ abstract class PicturesEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class FetchProfilePictureURI extends PicturesEvent {}
+
+class UploadProfilePicture extends PicturesEvent {
+  final ImageSource payload;
+  UploadProfilePicture(this.payload);
+
+  @override
+  List<Object> get props => [payload];
+
+  @override
+  String toString() {
+    return "UploadProfilePicture: { payload: $payload }";
+  }
+}

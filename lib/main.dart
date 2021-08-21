@@ -15,47 +15,71 @@ import 'package:spark/pages/OnboardingPage.dart';
 import 'package:spark/repositories/auth/auth_repository.dart';
 import 'package:spark/repositories/auth/auth_repository_firebase.dart';
 import 'package:spark/blocs/bloc_barrel.dart';
+import 'package:spark/repositories/pictures/pictures_repository.dart';
+import 'package:spark/repositories/pictures/pictures_repository_firebase.dart';
 
 Future<void> main() async {
-  // TODO: Add an observer for debugging
   Bloc.observer = SparkBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final AuthRepository authRepo = FirebaseAuthRepository();
+  final PicturesRepository picRepo = FirebasePicturesRepository();
   runApp(SparkApp(
     authRepository: authRepo,
+    picturesRepository: picRepo,
   ));
 }
 
 class SparkApp extends StatelessWidget {
-  SparkApp({Key? key, required AuthRepository authRepository})
-      : _authRepository = authRepository,
-        super(key: key);
   final AuthRepository _authRepository;
+  final PicturesRepository _picturesRepository;
+
+  SparkApp({
+    Key? key,
+    required AuthRepository authRepository,
+    required PicturesRepository picturesRepository,
+  })  : _authRepository = authRepository,
+        _picturesRepository = picturesRepository,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: _authRepository,
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<AuthBloc>(
-            lazy: false,
-            create: (_) => AuthBloc(auth: _authRepository)..add(AppStarted()),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(value: _authRepository),
+        RepositoryProvider.value(value: _picturesRepository),
+      ],
+      child: BlocProvider(
+        lazy: false,
+        create: (context) => AuthBloc(auth: _authRepository)..add(AppStarted()),
+        child: MultiBlocProvider(
+          providers: [
+            // BlocProvider<SettingsBloc>(
+            //     create: (context) =>
+            //         SettingsBloc(auth: context.read<AuthBloc>())),
+            BlocProvider<PicturesBloc>(
+              create: (context) => PicturesBloc(
+                auth: context.read<AuthBloc>(),
+                picturesRepository: _picturesRepository,
+              ),
+            ),
+            // BlocProvider<OffersBloc>(
+            //   create: (context) => OffersBloc(auth: context.read<AuthBloc>()),
+            // ),
+          ],
+          child: MaterialApp(
+            title: 'Spark',
+            theme: ThemeData(
+              primarySwatch: Colors.cyan,
+            ),
+            initialRoute: '/',
+            routes: {
+              '/': (context) => SparkHome(),
+              '/login': (context) => LoginPage(),
+              '/signup': (context) => LoginPage(),
+              '/onboarding': (context) => OnboardingPage(),
+            },
           ),
-        ],
-        child: MaterialApp(
-          title: 'Spark',
-          theme: ThemeData(
-            primarySwatch: Colors.cyan,
-          ),
-          initialRoute: '/',
-          routes: {
-            '/': (context) => SparkHome(),
-            '/login': (context) => LoginPage(),
-            '/signup': (context) => LoginPage(),
-            '/onboarding': (context) => OnboardingPage(),
-          },
         ),
       ),
     );

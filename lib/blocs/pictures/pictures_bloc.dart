@@ -2,17 +2,54 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:spark/blocs/auth/auth_bloc.dart';
+import 'package:spark/repositories/pictures/pictures_repository.dart';
 
 part 'pictures_event.dart';
 part 'pictures_state.dart';
 
 class PicturesBloc extends Bloc<PicturesEvent, PicturesState> {
-  PicturesBloc() : super(PicturesInitial());
+  final AuthBloc _authBloc;
+  final PicturesRepository _picturesRepository;
+
+  PicturesBloc(
+      {required AuthBloc auth, required PicturesRepository picturesRepository})
+      : _authBloc = auth,
+        _picturesRepository = picturesRepository,
+        super(PicturesIdle(""));
 
   @override
   Stream<PicturesState> mapEventToState(
     PicturesEvent event,
   ) async* {
-    // TODO: implement mapEventToState
+    if (event is FetchProfilePictureURI) {
+      yield* mapFetchProfilePictureURIToState(event);
+    } else if (event is UploadProfilePicture) {
+      yield* mapUploadProfilePictureToState(event);
+    }
+  }
+
+  Stream<PicturesState> mapFetchProfilePictureURIToState(
+      FetchProfilePictureURI event) async* {
+    yield PicturesFetching();
+
+    final AuthState authState = _authBloc.state;
+    if (authState is Authenticated) {
+      print("Hey");
+      yield PicturesIdle(authState.user.photoURL!);
+    }
+  }
+
+  Stream<PicturesState> mapUploadProfilePictureToState(
+      UploadProfilePicture event) async* {
+    yield PicturesFetching();
+
+    final AuthState authState = _authBloc.state;
+    if (authState is Authenticated)
+      await _picturesRepository.uploadProfilePicture(
+          authState.user, event.payload);
+
+    yield PicturesIdle("");
   }
 }
