@@ -63,9 +63,11 @@ class HomeDrawer extends StatelessWidget {
                           child: Hero(
                               tag: HERO_TAG_DRAWER_PROFILE,
                               child: CircleAvatar(
-                                  radius: 34.5,
-                                  backgroundImage: NetworkImage(
-                                      "https://picsum.photos/250?image=9"))),
+                                radius: 34.5,
+                                backgroundImage: state is Authenticated
+                                    ? NetworkImage(state.user.photoURL ?? "")
+                                    : null,
+                              )),
                         ),
                       ),
                       AutoSizeText(
