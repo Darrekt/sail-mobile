@@ -1,8 +1,12 @@
-# spark
+# Sail
 
-A new Flutter project.
+An app that makes being apart a little less painful for couples separated by distance.
 
-## Getting Started
+## Design
+
+This app uses [Bloc](https://bloclibrary.dev/#/) for state management. Read up on basic concepts and see the design document below for details on how we separated the concerns of all the different blocs to handle our business logic.
+
+## Contributing
 
 This project is a starting point for a Flutter application.
 

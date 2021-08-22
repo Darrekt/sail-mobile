@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+// TODO: Write a custom exception layer to handle in the app.
+
 abstract class AuthRepository {
   /// Checks whether a user is signed in.
   Future<bool> isAuthenticated();
