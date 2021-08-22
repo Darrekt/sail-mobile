@@ -22,7 +22,7 @@ class ProfilePicturePage extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  // TODO: Move photo editing and upload to a modal actions in here
+                  // TODO: Move photo editing and upload to a modal action in here
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -48,7 +48,6 @@ class ProfilePicturePage extends StatelessWidget {
                   children: [
                     IconButton(
                         onPressed: () async {
-                          // TODO: Link to bloc
                           context
                               .read<PicturesBloc>()
                               .add(UploadProfilePicture(ImageSource.camera));

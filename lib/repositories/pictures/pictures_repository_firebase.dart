@@ -35,7 +35,6 @@ class FirebasePicturesRepository implements PicturesRepository {
       log(e.message!);
     }
 
-    // TODO: Create our own user model and delegate this to the AuthBloc
     await user.updatePhotoURL(await storageRef.getDownloadURL());
   }
 }

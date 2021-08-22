@@ -1,16 +1,24 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
-  final FirebaseAuth _firebaseAuth;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  User? _user;
 
-  FirebaseAuthRepository({FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  FirebaseAuthRepository() {
+    // TODO: How to cancel this subscription?
+    _firebaseAuth.authStateChanges().listen((user) {
+      _user = user;
+    });
+  }
 
   Future<bool> isAuthenticated() async {
     final currentUser = _firebaseAuth.currentUser;
@@ -19,6 +27,21 @@ class FirebaseAuthRepository implements AuthRepository {
 
   Stream<User?> getUser() async* {
     yield* _firebaseAuth.authStateChanges();
+  }
+
+  Stream<User?> getPartner(User user) async* {
+    // FIXME: Not working
+    bool loggedIn = await isAuthenticated();
+    if (loggedIn) {
+      _firestore
+          .collection('users')
+          .doc(_firebaseAuth.currentUser!.uid)
+          .snapshots()
+          .listen((event) async* {
+        yield event.data()?['partner'];
+      });
+    } else
+      yield null;
   }
 
   Future<void> signUpEmail(String email, String password) async {
@@ -33,6 +56,7 @@ class FirebaseAuthRepository implements AuthRepository {
       } else if (e.code == 'email-already-in-use') {
         log('The account already exists for that email.');
       }
+      throw SignUpFailure();
     } catch (e) {
       log(e.toString());
     }
@@ -46,59 +70,65 @@ class FirebaseAuthRepository implements AuthRepository {
       );
     } on FirebaseAuthException catch (e) {
       print(e.code);
+      throw LogInWithEmailFailure();
     }
     return;
   }
 
-  Future<void> authenticateEmailLink(String email, String password) async {
+  Future<void> authenticateEmailLink(String email) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      print(e.code);
+      throw NotImplementedException();
+    } catch (e) {
+      throw LogInWithEmailFailure();
     }
-    return;
   }
 
   // TODO: Implement Apple auth
-  Future<void> authenticateApple() async {}
+  Future<void> authenticateApple() async {
+    throw NotImplementedException();
+  }
 
   Future<UserCredential> authenticateFacebook() async {
-    // Trigger the sign-in flow
-    final LoginResult loginResult = await FacebookAuth.instance.login();
+    try {
+      // Trigger the sign-in flow
+      final LoginResult loginResult = await FacebookAuth.instance.login();
 
-    // Create a credential from the access token
-    final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      // Create a credential from the access token
+      final OAuthCredential facebookAuthCredential =
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
-    if (loginResult.status == LoginStatus.success) {}
-    // Once signed in, return the UserCredential
-    return _firebaseAuth.signInWithCredential(facebookAuthCredential);
+      if (loginResult.status == LoginStatus.success) {}
+      // Once signed in, return the UserCredential
+      return _firebaseAuth.signInWithCredential(facebookAuthCredential);
+    } catch (e) {
+      throw LogInWithFacebookFailure();
+    }
   }
 
   Future<UserCredential> authenticateGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser!.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    // Once signed in, return the UserCredential
-    return await _firebaseAuth.signInWithCredential(credential);
+      // Once signed in, return the UserCredential
+      return await _firebaseAuth.signInWithCredential(credential);
+    } catch (e) {
+      throw LogInWithGoogleFailure();
+    }
   }
 
   Future<void> logout() async {
-    await _firebaseAuth.signOut();
-    return;
+    return await _firebaseAuth.signOut();
   }
 
   Future<void> linkEmail(String email, String password) async {

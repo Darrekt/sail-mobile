@@ -21,3 +21,14 @@ class Authenticated extends AuthState {
   @override
   String toString() => "Authenticated { user: $user }";
 }
+
+class Paired extends Authenticated {
+  final User partner;
+  Paired(User user, this.partner) : super(user);
+
+  @override
+  List<Object> get props => [user.uid, partner.uid];
+
+  @override
+  String toString() => "Paired { user: $user, partner: $partner}";
+}
