@@ -48,6 +48,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   bloc_test: ^8.1.0
+  firebase_auth_mocks: ^0.8.0
+  google_sign_in_mocks: ^0.2.1
+  mockito: ^5.0.15
+  build_runner: ^2.1.1
+  mocktail: ^0.1.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
