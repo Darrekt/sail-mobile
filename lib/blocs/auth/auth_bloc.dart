@@ -44,7 +44,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _userSubscription = _auth
         .getUser()
         .listen((SparkUser update) => add(AuthStateUpdated(update)));
-    yield AppLoading();
   }
 
   Stream<AuthState> _mapAuthStateUpdatedToState(AuthStateUpdated event) async* {
@@ -54,7 +53,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     else {
       if (_partnerSubscription != null) _partnerSubscription!.cancel();
       _partnerSubscription =
-          _auth.getPartner(user).listen((event) => add(PartnerUpdated(user)));
+          _auth.getPartner(user).listen((event) => add(PartnerUpdated(event)));
+      yield Authenticated(user);
     }
   }
 
