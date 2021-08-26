@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:spark/models/SparkUser.dart';
 import 'package:spark/repositories/auth/auth_repository.dart';
 import 'package:equatable/equatable.dart';
 
@@ -9,7 +9,8 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _auth;
-  StreamSubscription<User?>? _userSubscription;
+  StreamSubscription<SparkUser>? _userSubscription;
+  StreamSubscription<SparkUser>? _partnerSubscription;
 
   AuthBloc({required AuthRepository auth})
       : _auth = auth,
@@ -21,12 +22,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       yield* _mapAppStartedToState();
     } else if (event is AuthStateUpdated) {
       yield* _mapAuthStateUpdatedToState(event);
+    } else if (event is PartnerUpdated) {
+      yield* _mapPartnerUpdatedToState(event);
     } else if (event is TryEmailSignIn) {
       yield* _mapTryEmailSignInToState(event);
     } else if (event is TryFacebookSignIn) {
       yield* _mapTryFacebookSignInToState();
     } else if (event is TryGoogleSignIn) {
       yield* _mapTryGoogleSignInToState();
+    } else if (event is TryAppleSignIn) {
+      yield* _mapTryAppleSignInToState();
     } else if (event is TryAppleSignIn) {
       yield* _mapTryAppleSignInToState();
     } else if (event is Logout) {
@@ -36,14 +41,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Stream<AuthState> _mapAppStartedToState() async* {
     if (_userSubscription != null) _userSubscription!.cancel();
-    _userSubscription =
-        _auth.getUser().listen((update) => add(AuthStateUpdated(update)));
+    _userSubscription = _auth
+        .getUser()
+        .listen((SparkUser update) => add(AuthStateUpdated(update)));
     yield AppLoading();
   }
 
   Stream<AuthState> _mapAuthStateUpdatedToState(AuthStateUpdated event) async* {
-    final User? user = event.payload;
-    yield user == null ? Unauthenticated() : Authenticated(user);
+    SparkUser user = event.payload;
+    if (user == SparkUser.empty)
+      yield Unauthenticated();
+    else {
+      if (_partnerSubscription != null) _partnerSubscription!.cancel();
+      _partnerSubscription =
+          _auth.getPartner(user).listen((event) => add(PartnerUpdated(user)));
+    }
+  }
+
+  Stream<AuthState> _mapPartnerUpdatedToState(PartnerUpdated event) async* {
+    final SparkUser partner = event.payload;
+    AuthState currentState = state;
+
+    if (partner != SparkUser.empty && currentState is Authenticated)
+      yield Paired(currentState.user, partner);
   }
 
   Stream<AuthState> _mapTryEmailSignInToState(TryEmailSignIn event) async* {
@@ -76,6 +96,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> close() {
     // ignore_for_file: cancel_subscriptions
     if (_userSubscription != null) _userSubscription!.cancel();
+    if (_partnerSubscription != null) _partnerSubscription!.cancel();
     return super.close();
   }
 }

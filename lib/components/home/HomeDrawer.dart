@@ -65,15 +65,13 @@ class HomeDrawer extends StatelessWidget {
                               child: CircleAvatar(
                                 radius: 34.5,
                                 backgroundImage: state is Authenticated
-                                    ? NetworkImage(state.user.photoURL ?? "")
+                                    ? NetworkImage(state.user.photo ?? "")
                                     : null,
                               )),
                         ),
                       ),
                       AutoSizeText(
-                        state is Authenticated
-                            ? state.user.displayName!
-                            : "Anonymous",
+                        state is Authenticated ? state.user.name! : "Anonymous",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       AutoSizeText(

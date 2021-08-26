@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:spark/models/SparkUser.dart';
 
 import 'auth_repository.dart';
 
@@ -25,23 +26,26 @@ class FirebaseAuthRepository implements AuthRepository {
     return currentUser != null;
   }
 
-  Stream<User?> getUser() async* {
-    yield* _firebaseAuth.authStateChanges();
+  Stream<SparkUser> getUser() async* {
+    yield* _firebaseAuth
+        .authStateChanges()
+        .map((event) => SparkUser(firebaseUser: event));
   }
 
-  Stream<User?> getPartner(User user) async* {
-    // FIXME: Not working
-    bool loggedIn = await isAuthenticated();
-    if (loggedIn) {
-      _firestore
-          .collection('users')
-          .doc(_firebaseAuth.currentUser!.uid)
-          .snapshots()
-          .listen((event) async* {
-        yield event.data()?['partner'];
-      });
-    } else
-      yield null;
+  // TODO: Implement
+  Stream<SparkUser> getPartner(SparkUser user) async* {
+    // bool loggedIn = await isAuthenticated();
+    // if (loggedIn) {
+    //   _firestore
+    //       .collection('users')
+    //       .doc(_firebaseAuth.currentUser!.uid)
+    //       .snapshots()
+    //       .listen((event) async* {
+    //     yield event.data()?['partner'];
+    //   });
+    // } else
+    //   yield null;
+    throw NotImplementedException();
   }
 
   Future<void> signUpEmail(String email, String password) async {

@@ -32,12 +32,9 @@ class PicturesBloc extends Bloc<PicturesEvent, PicturesState> {
 
   Stream<PicturesState> mapFetchProfilePictureURIToState(
       FetchProfilePictureURI event) async* {
-    yield PicturesFetching();
-
     final AuthState authState = _authBloc.state;
     if (authState is Authenticated) {
-      print("Hey");
-      yield PicturesIdle(authState.user.photoURL!);
+      yield PicturesIdle(authState.user.photo ?? "");
     }
   }
 
@@ -46,9 +43,11 @@ class PicturesBloc extends Bloc<PicturesEvent, PicturesState> {
     yield PicturesFetching();
 
     final AuthState authState = _authBloc.state;
-    if (authState is Authenticated)
-      await _picturesRepository.uploadProfilePicture(
+    if (authState is Authenticated) {
+      String resourceLocation = await _picturesRepository.uploadProfilePicture(
           authState.user, event.payload);
+      _authBloc.add(UpdateProfilePictureURI(resourceLocation));
+    }
 
     yield PicturesIdle("");
   }

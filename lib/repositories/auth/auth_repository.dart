@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:spark/models/SparkUser.dart';
 
 // Thrown if the function is not implemented.
 class NotImplementedException implements Exception {}
@@ -31,12 +31,12 @@ abstract class AuthRepository {
   }
 
   /// Fetches the user object.
-  Stream<User?> getPartner(User user) {
+  Stream<SparkUser> getPartner(SparkUser user) {
     throw NotImplementedException();
   }
 
   /// Fetches the user object.
-  Stream<User?> getUser() {
+  Stream<SparkUser> getUser() {
     throw NotImplementedException();
   }
 

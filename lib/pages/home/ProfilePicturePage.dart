@@ -34,9 +34,8 @@ class ProfilePicturePage extends StatelessWidget {
                       elevation: 8,
                       child: CircleAvatar(
                           radius: 69,
-                          backgroundImage: NetworkImage(state is Authenticated
-                              ? state.user.photoURL!
-                              : "")),
+                          backgroundImage: NetworkImage(
+                              state is Authenticated ? state.user.photo! : "")),
                     ),
                   ),
                 ),
@@ -66,9 +65,8 @@ class ProfilePicturePage extends StatelessWidget {
               ),
               SettingsGroup(
                   title: "Name",
-                  subtitle: state is Authenticated
-                      ? state.user.displayName!
-                      : "Anonymous",
+                  subtitle:
+                      state is Authenticated ? state.user.name! : "Anonymous",
                   onTrailingCallback: () {}),
               SettingsGroup(
                   title: "Location",
