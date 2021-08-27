@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+// TODO: Add exception handling for sign ins
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _auth;
   StreamSubscription<SparkUser>? _userSubscription;
