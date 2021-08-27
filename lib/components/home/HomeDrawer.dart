@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spark/blocs/bloc_barrel.dart';
+import 'package:spark/components/home/ProfileAvatar.dart';
 import 'package:spark/constants.dart';
 import 'package:spark/pages/home/ProfilePicturePage.dart';
 
@@ -61,13 +62,11 @@ class HomeDrawer extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Hero(
-                              tag: HERO_TAG_DRAWER_PROFILE,
-                              child: CircleAvatar(
-                                radius: 34.5,
-                                backgroundImage: state is Authenticated
-                                    ? NetworkImage(state.user.photo ?? "")
-                                    : null,
-                              )),
+                            tag: HERO_TAG_DRAWER_PROFILE,
+                            child: ProfileAvatar(
+                              radius: 34.5,
+                            ),
+                          ),
                         ),
                       ),
                       AutoSizeText(

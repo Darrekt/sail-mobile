@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:spark/blocs/bloc_barrel.dart';
+import 'package:spark/components/home/ProfileAvatar.dart';
 import 'package:spark/components/util/SettingsGroup.dart';
 import 'package:spark/constants.dart';
 
@@ -32,10 +33,9 @@ class ProfilePicturePage extends StatelessWidget {
                       shape: CircleBorder(),
                       clipBehavior: Clip.antiAlias,
                       elevation: 8,
-                      child: CircleAvatar(
-                          radius: 69,
-                          backgroundImage: NetworkImage(
-                              state is Authenticated ? state.user.photo! : "")),
+                      child: ProfileAvatar(
+                        radius: 69,
+                      ),
                     ),
                   ),
                 ),
@@ -59,7 +59,13 @@ class ProfilePicturePage extends StatelessWidget {
                               .add(UploadProfilePicture(ImageSource.gallery));
                         },
                         icon: Icon(Icons.photo_album)),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+                    IconButton(
+                        onPressed: () {
+                          context
+                              .read<PicturesBloc>()
+                              .add(ClearProfilePicture());
+                        },
+                        icon: Icon(Icons.delete)),
                   ],
                 ),
               ),
