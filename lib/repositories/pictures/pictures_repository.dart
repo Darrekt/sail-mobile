@@ -8,6 +8,9 @@ abstract class PicturesRepository {
   /// Uploads the selected image from the user's phone storage to a cloud storage container.
   Future<String> uploadProfilePicture(SparkUser user, ImageSource src);
 
+  /// Clears the cloud storage container and sets the user's profile picture from cloud storage.
+  Future<void> clearProfilePicture(SparkUser user);
+
   // Future<void> fetchAlbums();
 
   // Future<void> fetchAlbumImages(String album);

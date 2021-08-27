@@ -33,8 +33,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       yield* _mapTryGoogleSignInToState();
     } else if (event is TryAppleSignIn) {
       yield* _mapTryAppleSignInToState();
-    } else if (event is TryAppleSignIn) {
-      yield* _mapTryAppleSignInToState();
+    } else if (event is UpdateProfilePictureURI) {
+      yield* _mapUpdateProfilePictureURIToState(event);
     } else if (event is Logout) {
       yield* _mapLogOutToState();
     }
@@ -52,9 +52,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (user == SparkUser.empty)
       yield Unauthenticated();
     else {
-      if (_partnerSubscription != null) _partnerSubscription!.cancel();
-      _partnerSubscription =
-          _auth.getPartner(user).listen((event) => add(PartnerUpdated(event)));
+      // if (_partnerSubscription != null) _partnerSubscription!.cancel();
+      // _partnerSubscription =
+      //     _auth.getPartner(user).listen((event) => add(PartnerUpdated(event)));
       yield Authenticated(user);
     }
   }
@@ -87,6 +87,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Stream<AuthState> _mapTryAppleSignInToState() async* {
     await _auth.authenticateApple();
+  }
+
+  Stream<AuthState> _mapUpdateProfilePictureURIToState(
+      UpdateProfilePictureURI event) async* {
+    await _auth.updateProfilePictureURI(event.payload);
   }
 
   Stream<AuthState> _mapLogOutToState() async* {

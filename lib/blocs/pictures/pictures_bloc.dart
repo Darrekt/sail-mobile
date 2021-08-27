@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:spark/blocs/auth/auth_bloc.dart';
+import 'package:spark/repositories/auth/auth_repository.dart';
 import 'package:spark/repositories/pictures/pictures_repository.dart';
 
 part 'pictures_event.dart';
@@ -27,6 +28,8 @@ class PicturesBloc extends Bloc<PicturesEvent, PicturesState> {
       yield* mapFetchProfilePictureURIToState(event);
     } else if (event is UploadProfilePicture) {
       yield* mapUploadProfilePictureToState(event);
+    } else if (event is ClearProfilePicture) {
+      yield* mapClearProfilePictureToState();
     }
   }
 
@@ -48,7 +51,17 @@ class PicturesBloc extends Bloc<PicturesEvent, PicturesState> {
           authState.user, event.payload);
       _authBloc.add(UpdateProfilePictureURI(resourceLocation));
     }
+  }
 
-    yield PicturesIdle("");
+  Stream<PicturesState> mapClearProfilePictureToState() async* {
+    final AuthState authState = _authBloc.state;
+    if (authState is Authenticated) {
+      try {
+        _picturesRepository.clearProfilePicture(authState.user);
+      } catch (e) {}
+      _authBloc.add(UpdateProfilePictureURI(null));
+    } else {
+      throw UserNotLoggedInException();
+    }
   }
 }

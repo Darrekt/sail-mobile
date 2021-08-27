@@ -3,6 +3,9 @@ import 'package:spark/models/SparkUser.dart';
 // Thrown if the function is not implemented.
 class NotImplementedException implements Exception {}
 
+// Thrown if some sensitive action was attempted, but no user was found logged in.
+class UserNotLoggedInException implements Exception {}
+
 // Thrown if during the sign up process if a failure occurs.
 class SignUpFailure implements Exception {}
 
@@ -72,6 +75,10 @@ abstract class AuthRepository {
 
   /// TODO: Links the current session to an existing user profile via an alternate sign-in.
   Future<void> linkEmail(String email, String password) {
+    throw NotImplementedException();
+  }
+
+  Future<void> updateProfilePictureURI(String? uri) {
     throw NotImplementedException();
   }
 

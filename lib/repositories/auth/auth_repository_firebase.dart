@@ -12,23 +12,26 @@ import 'auth_repository.dart';
 class FirebaseAuthRepository implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late StreamSubscription _userSub;
   User? _user;
 
   FirebaseAuthRepository() {
-    // TODO: How to cancel this subscription?
-    _firebaseAuth.authStateChanges().listen((user) {
+    _userSub = _firebaseAuth.authStateChanges().listen((user) {
       _user = user;
     });
   }
 
   Future<bool> isAuthenticated() async {
-    final currentUser = _firebaseAuth.currentUser;
-    return currentUser != null;
+    return _user != null;
+  }
+
+  Future<void> refreshUser() async {
+    if (_user != null) await _user!.reload();
   }
 
   Stream<SparkUser> getUser() async* {
     yield* _firebaseAuth
-        .authStateChanges()
+        .userChanges()
         .map((event) => SparkUser(firebaseUser: event));
   }
 
@@ -131,6 +134,13 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
+  Future<void> updateProfilePictureURI(String? uri) async {
+    if (_user != null)
+      await _user!.updatePhotoURL(uri);
+    else
+      throw UserNotLoggedInException();
+  }
+
   Future<void> logout() async {
     return await _firebaseAuth.signOut();
   }
@@ -141,4 +151,7 @@ class FirebaseAuthRepository implements AuthRepository {
     await _firebaseAuth.currentUser?.linkWithCredential(eCred);
     return;
   }
+
+  // Not sure, searched high and low for how to cancel StreamSubscriptions in non-widget classes in Dart.
+  void dispose() => _userSub.cancel();
 }

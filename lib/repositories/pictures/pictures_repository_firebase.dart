@@ -37,4 +37,8 @@ class FirebasePicturesRepository implements PicturesRepository {
       return "";
     }
   }
+
+  Future<void> clearProfilePicture(user) async {
+    await _storage.ref('profile-pictures/${user.id}.png').delete();
+  }
 }

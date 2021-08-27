@@ -73,11 +73,11 @@ class TryGoogleSignIn extends AuthEvent {}
 class TryAppleSignIn extends AuthEvent {}
 
 class UpdateProfilePictureURI extends AuthEvent {
-  final String payload;
+  final String? payload;
   UpdateProfilePictureURI(this.payload);
 
   @override
-  List<Object> get props => [payload];
+  List<Object> get props => [payload ?? ""];
 
   @override
   String toString() => "UpdateProfilePictureURI { payload: $payload }";

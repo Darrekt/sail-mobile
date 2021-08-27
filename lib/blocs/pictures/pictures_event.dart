@@ -21,3 +21,5 @@ class UploadProfilePicture extends PicturesEvent {
     return "UploadProfilePicture: { payload: $payload }";
   }
 }
+
+class ClearProfilePicture extends PicturesEvent {}
