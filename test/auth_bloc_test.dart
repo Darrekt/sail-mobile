@@ -179,4 +179,40 @@ void main() {
       ],
     );
   });
+
+  group('Auth Bloc action checks', () {
+    late MockFirebaseAuthRepository mockRepo;
+    late AuthBloc auth;
+    late StreamController<SparkUser> userStreamController;
+
+    setUp(() {
+      mockRepo = MockFirebaseAuthRepository();
+      auth = AuthBloc(auth: mockRepo);
+      userStreamController = StreamController();
+    });
+
+    tearDown(() => userStreamController.close());
+
+    blocTest(
+      'Updates user state when profile picture is added',
+      build: () => auth,
+      setUp: () {
+        mockito
+            .when(mockRepo.getUser())
+            .thenAnswer((_) => userStreamController.stream);
+
+        mockito
+            .when(mockRepo.getPartner(testUser))
+            .thenAnswer((_) => Stream.fromIterable([testPartner]));
+      },
+      act: (AuthBloc bloc) {
+        bloc.add(AppStarted());
+        userStreamController.add(testUser);
+      },
+      expect: () => [
+        Authenticated(testUser),
+        Paired(testUser, testPartner),
+      ],
+    );
+  });
 }
