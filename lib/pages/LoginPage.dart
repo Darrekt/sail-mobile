@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                   SignInButton(
                     Buttons.Facebook,
                     onPressed: () =>
-                        context.read<AuthBloc>().add(TryGoogleSignIn()),
+                        context.read<AuthBloc>().add(TryFacebookSignIn()),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8.0))),
                   ),

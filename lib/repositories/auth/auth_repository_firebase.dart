@@ -130,6 +130,7 @@ class FirebaseAuthRepository implements AuthRepository {
       // Once signed in, return the UserCredential
       return await _firebaseAuth.signInWithCredential(credential);
     } catch (e) {
+      print(e.toString());
       throw LogInWithGoogleFailure();
     }
   }
