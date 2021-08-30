@@ -7,7 +7,6 @@ import 'package:equatable/equatable.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
-// TODO: Add exception handling for sign ins
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _auth;
   StreamSubscription<SparkUser>? _userSubscription;
@@ -71,22 +70,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (state is Unauthenticated) {
       try {
         await _auth.authenticateEmail(event.email, event.password);
-      } catch (e) {}
+      } catch (e) {
+        yield LoginFailed(e.toString());
+      }
     } else if (state is Authenticated) {
       await _auth.linkEmail(event.email, event.password);
     }
   }
 
   Stream<AuthState> _mapTryFacebookSignInToState() async* {
-    await _auth.authenticateFacebook();
+    try {
+      await _auth.authenticateFacebook();
+    } catch (e) {
+      yield LoginFailed(e.toString());
+    }
   }
 
   Stream<AuthState> _mapTryGoogleSignInToState() async* {
-    await _auth.authenticateGoogle();
+    try {
+      await _auth.authenticateGoogle();
+    } catch (e) {
+      yield LoginFailed(e.toString());
+    }
   }
 
   Stream<AuthState> _mapTryAppleSignInToState() async* {
-    await _auth.authenticateApple();
+    try {
+      await _auth.authenticateApple();
+    } catch (e) {
+      yield LoginFailed(e.toString());
+    }
   }
 
   Stream<AuthState> _mapUpdateProfilePictureURIToState(

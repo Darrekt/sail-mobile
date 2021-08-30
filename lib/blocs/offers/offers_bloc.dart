@@ -12,7 +12,5 @@ class OffersBloc extends Bloc<OffersEvent, OffersState> {
   @override
   Stream<OffersState> mapEventToState(
     OffersEvent event,
-  ) async* {
-    // TODO: implement mapEventToState
-  }
+  ) async* {}
 }

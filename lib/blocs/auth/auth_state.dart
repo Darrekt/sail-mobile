@@ -11,6 +11,17 @@ class AppLoading extends AuthState {}
 
 class Unauthenticated extends AuthState {}
 
+class LoginFailed extends Unauthenticated {
+  final String message;
+  LoginFailed(this.message);
+
+  @override
+  List<Object> get props => [message];
+
+  @override
+  String toString() => "LoginFailed { message: $message }";
+}
+
 class Authenticated extends AuthState {
   final SparkUser user;
   Authenticated(this.user);

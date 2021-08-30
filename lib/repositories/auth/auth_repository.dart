@@ -73,7 +73,6 @@ abstract class AuthRepository {
     throw NotImplementedException();
   }
 
-  /// TODO: Links the current session to an existing user profile via an alternate sign-in.
   Future<void> linkEmail(String email, String password) {
     throw NotImplementedException();
   }

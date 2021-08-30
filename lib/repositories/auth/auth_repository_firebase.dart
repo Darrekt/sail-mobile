@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:spark/models/SparkUser.dart';
@@ -11,7 +12,7 @@ import 'auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late StreamSubscription _userSub;
   User? _user;
 
@@ -35,7 +36,6 @@ class FirebaseAuthRepository implements AuthRepository {
         .map((event) => SparkUser(firebaseUser: event));
   }
 
-  // TODO: Implement
   Stream<SparkUser> getPartner(SparkUser user) async* {
     // bool loggedIn = await isAuthenticated();
     // if (loggedIn) {
@@ -90,7 +90,6 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
-  // TODO: Implement Apple auth
   Future<void> authenticateApple() async {
     throw NotImplementedException();
   }
@@ -129,8 +128,11 @@ class FirebaseAuthRepository implements AuthRepository {
 
       // Once signed in, return the UserCredential
       return await _firebaseAuth.signInWithCredential(credential);
-    } catch (e) {
-      print(e.toString());
+    } on FirebaseAuthException catch (e) {
+      print(e.code);
+      throw LogInWithGoogleFailure();
+    } on PlatformException catch (e) {
+      print(e.code);
       throw LogInWithGoogleFailure();
     }
   }
