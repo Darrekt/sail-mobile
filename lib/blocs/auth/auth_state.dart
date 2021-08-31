@@ -1,6 +1,8 @@
 part of 'auth_bloc.dart';
 
 abstract class AuthState extends Equatable {
+  final SparkUser user = SparkUser.empty;
+  final SparkUser partner = SparkUser.empty;
   const AuthState();
 
   @override

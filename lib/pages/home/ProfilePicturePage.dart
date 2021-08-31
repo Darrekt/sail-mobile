@@ -33,9 +33,7 @@ class ProfilePicturePage extends StatelessWidget {
                       shape: CircleBorder(),
                       clipBehavior: Clip.antiAlias,
                       elevation: 8,
-                      child: ProfileAvatar(
-                        radius: 69,
-                      ),
+                      child: ProfileAvatar(state.user, radius: 69),
                     ),
                   ),
                 ),
@@ -71,8 +69,7 @@ class ProfilePicturePage extends StatelessWidget {
               ),
               SettingsGroup(
                   title: "Name",
-                  subtitle:
-                      state is Authenticated ? state.user.name! : "Anonymous",
+                  subtitle: state.user.name ?? "Anonymous",
                   onTrailingCallback: () {}),
               SettingsGroup(
                   title: "Location",
@@ -80,8 +77,18 @@ class ProfilePicturePage extends StatelessWidget {
                   onTrailingCallback: () {}),
               SettingsGroup(
                   title: "Email",
-                  subtitle: state is Authenticated ? state.user.email! : "",
+                  subtitle: state.user.email ?? "No registered email",
                   onTrailingCallback: () {}),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: ElevatedButton(
+                  child: const Text('Sign out'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    context.read<AuthBloc>().add(Logout());
+                  },
+                ),
+              ),
             ],
           ),
         );

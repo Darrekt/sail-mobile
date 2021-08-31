@@ -8,6 +8,10 @@ This app uses [Bloc](https://bloclibrary.dev/#/) for state management.
 
 ## Contributing
 
+### Agile board
+
+Our Trello board can be found [here](https://trello.com/b/1mG8PKVQ/spark).
+
 ### Running tests
 
 Before you run tests, you need to autogenerate all the mock classes by running

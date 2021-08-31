@@ -8,7 +8,7 @@ import 'package:spark/components/navigation/navbar.dart';
 import 'package:spark/constants.dart';
 import 'package:spark/components/home/HomeDrawer.dart';
 import 'package:spark/pages/AlbumPage.dart';
-import 'package:spark/pages/HomePage.dart';
+import 'package:spark/pages/home/HomePage.dart';
 import 'package:spark/pages/LoginPage.dart';
 import 'package:spark/pages/OffersPage.dart';
 import 'package:spark/pages/OnboardingPage.dart';
