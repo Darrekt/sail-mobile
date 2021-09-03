@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:spark/blocs/bloc_barrel.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
