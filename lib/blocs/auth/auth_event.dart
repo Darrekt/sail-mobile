@@ -31,15 +31,26 @@ class PartnerUpdated extends AuthEvent {
   String toString() => "PartnerUpdated { partner: $payload }";
 }
 
+class TryFindPartner extends AuthEvent {
+  final String email;
+  TryFindPartner(this.email);
+
+  @override
+  List<Object> get props => [email];
+
+  @override
+  String toString() => "TryFindPartner { email: $email }";
+}
+
 class TryLinkPartner extends AuthEvent {
-  final SparkUser payload;
-  TryLinkPartner(this.payload);
+  final String email, otp;
+  TryLinkPartner(this.email, this.otp);
 
   @override
-  List<Object> get props => [payload.id];
+  List<Object> get props => [email, otp];
 
   @override
-  String toString() => "AuthStateUpdated { partner: $payload }";
+  String toString() => "TryLinkPartner { email: $email, otp: $otp }";
 }
 
 class TryEmailSignUp extends AuthEvent {

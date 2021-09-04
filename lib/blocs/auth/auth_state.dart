@@ -35,6 +35,29 @@ class Authenticated extends AuthState {
   String toString() => "Authenticated { user: $user }";
 }
 
+class PairingInProgress extends Authenticated {
+  final String partnerEmail;
+  PairingInProgress(SparkUser user, this.partnerEmail) : super(user);
+
+  @override
+  List<Object> get props => [user.id, partnerEmail];
+
+  @override
+  String toString() =>
+      "PairingInProgress { user: $user, partnerEmail: $partnerEmail}";
+}
+
+class PairingFailed extends Authenticated {
+  final String reason;
+  PairingFailed(SparkUser user, this.reason) : super(user);
+
+  @override
+  List<Object> get props => [user.id, reason];
+
+  @override
+  String toString() => "PairingFailed { user: $user, reason: $reason }";
+}
+
 class Paired extends Authenticated {
   final SparkUser partner;
   Paired(SparkUser user, this.partner) : super(user);

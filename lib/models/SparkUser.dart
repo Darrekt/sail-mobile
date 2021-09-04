@@ -10,8 +10,8 @@ class SparkUser extends Equatable {
   /// {@macro user}
   const SparkUser.fromScratch({
     required this.id,
-    this.email,
     this.partnerId,
+    this.email,
     this.name,
     this.photo,
   });
@@ -25,6 +25,23 @@ class SparkUser extends Equatable {
             photo: firebaseUser.photoURL,
           )
         : SparkUser.empty;
+  }
+
+  SparkUser.fromJson(Map<String, Object?> json)
+      : id = json['id'] as String,
+        email = json['email'] as String?,
+        partnerId = json['partnerId'] as String?,
+        name = json['name'] as String?,
+        photo = json['photo'] as String?;
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'partnerId': partnerId,
+      'email': email,
+      'name': name,
+      'photo': photo,
+    };
   }
 
   /// The current user's id.

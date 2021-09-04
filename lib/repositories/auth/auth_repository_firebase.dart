@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:spark/models/SparkUser.dart';
@@ -12,13 +12,27 @@ import 'auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CollectionReference<SparkUser> usersRef = FirebaseFirestore.instance
+      .collection('users')
+      .withConverter<SparkUser>(
+          fromFirestore: (doc, _) => SparkUser.fromJson(doc.data()!),
+          toFirestore: (user, _) => user.toJson());
+
   late StreamSubscription _userSub;
   User? _user;
 
   FirebaseAuthRepository() {
     _userSub = _firebaseAuth.authStateChanges().listen((user) {
       _user = user;
+      if (user != null)
+        usersRef.doc(user.uid).set(
+            SparkUser(firebaseUser: user),
+            SetOptions(mergeFields: [
+              'id',
+              'name',
+              'email',
+              'photo',
+            ]));
     });
   }
 
@@ -135,6 +149,29 @@ class FirebaseAuthRepository implements AuthRepository {
       print(e.code);
       throw LogInWithGoogleFailure();
     }
+  }
+
+  Future<SparkUser> findPartnerByEmail(String email) async {
+    List<QueryDocumentSnapshot<SparkUser>> partnerQss = await usersRef
+        .where('email', isEqualTo: email)
+        .get()
+        .then((snapshot) => snapshot.docs);
+
+    return partnerQss.length != 0 ? partnerQss[0].data() : SparkUser.empty;
+  }
+
+  Future<void> setupPairing(String email) {
+    // Request cloud functions to write an OTP
+    //  OTP should be valid for no longer than a minute
+    // Send OTP to partner via cloud messaging
+    throw NotImplementedException();
+  }
+
+  Future<void> tryPairingOTP(String email, String otp) {
+    // Send OTP to the endpoint, cloud function validates OTP against firebase.
+
+    // If successful write to both users' partnerId field and trigger listeners on both clients.
+    throw NotImplementedException();
   }
 
   Future<void> updateProfilePictureURI(String? uri) async {

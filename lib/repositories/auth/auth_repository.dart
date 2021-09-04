@@ -77,6 +77,14 @@ abstract class AuthRepository {
     throw NotImplementedException();
   }
 
+  Future<SparkUser> findPartnerByEmail(String email) {
+    throw NotImplementedException();
+  }
+
+  Future<void> tryPairingOTP(String email, String otp) {
+    throw NotImplementedException();
+  }
+
   Future<void> updateProfilePictureURI(String? uri) {
     throw NotImplementedException();
   }
