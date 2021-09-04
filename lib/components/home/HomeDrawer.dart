@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spark/blocs/bloc_barrel.dart';
 import 'package:spark/components/home/UserDisplay.dart';
-import 'package:spark/constants.dart';
+import 'package:spark/util/constants.dart';
 
 class HomeDrawer extends StatelessWidget {
   HomeDrawer({Key? key}) : super(key: key);

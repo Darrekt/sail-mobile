@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spark/blocs/bloc_barrel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:spark/components/util/SingleInputFormPage.dart';
+import 'package:spark/util/constants.dart';
 
 class PartnerPairingPage extends StatefulWidget {
   const PartnerPairingPage({Key? key}) : super(key: key);
@@ -61,8 +63,7 @@ class _PartnerPairingPageState extends State<PartnerPairingPage> {
     final Widget emailField = TextFormField(
       controller: _emailController,
       decoration: const InputDecoration(labelText: 'Email'),
-      validator: (value) =>
-          value == null || value.isEmpty ? 'Please enter a valid email' : null,
+      validator: emailValidator,
     );
 
     final Widget otpField = PinCodeTextField(
@@ -107,29 +108,6 @@ class _PartnerPairingPageState extends State<PartnerPairingPage> {
       },
     );
 
-    final Widget completeButton = Container(
-      padding: EdgeInsets.symmetric(
-          vertical: MediaQuery.of(context).size.height * 0.03),
-      alignment: Alignment.center,
-      child: ElevatedButton(
-        onPressed: otpSent ? _findPartner : _submitOTP,
-        child: AutoSizeText(
-          "Pair",
-          minFontSize: 16,
-        ),
-        style: ElevatedButton.styleFrom(
-          minimumSize: Size(
-            MediaQuery.of(context).size.width * 0.4,
-            MediaQuery.of(context).size.height * 0.02,
-          ),
-          padding: const EdgeInsets.all(10),
-          shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(8.0),
-          ),
-        ),
-      ),
-    );
-
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is PairingInProgress) {
@@ -149,67 +127,46 @@ class _PartnerPairingPageState extends State<PartnerPairingPage> {
               textColor: Colors.white,
               fontSize: 16.0);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-        ),
-        body: Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: deviceDimensions.width * 0.15),
-          child: Form(
-            key: _formKey,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: deviceDimensions.height * 0.025,
-                        bottom: deviceDimensions.height * 0.05),
-                    child: SizedBox(
-                      height: deviceDimensions.width * 0.4,
-                      width: deviceDimensions.width * 0.4,
-                      child: Placeholder(),
+      child: SingleInputFormPage(
+        title: "Partner pairing",
+        formKey: _formKey,
+        submitText: !otpSent ? "Send pairing code" : "Submit OTP",
+        onSubmit: !otpSent ? _findPartner : _submitOTP,
+        children: [
+          SizedBox(
+            height: deviceDimensions.height * 0.15,
+            width: deviceDimensions.width,
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: _pageController,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: AutoSizeText("Enter your partner's email:"),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: deviceDimensions.height * 0.15,
-                          width: deviceDimensions.width,
-                          child: PageView(
-                            physics: NeverScrollableScrollPhysics(),
-                            controller: _pageController,
-                            children: [
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text("Enter your partner's email:"),
-                                  emailField,
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text("Enter the code sent to your partner:"),
-                                  otpField,
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        completeButton
-                      ],
+                    emailField,
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child:
+                          AutoSizeText("Enter the code sent to your partner:"),
                     ),
-                  ),
-                ],
-              ),
+                    otpField,
+                  ],
+                ),
+              ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }

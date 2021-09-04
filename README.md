@@ -28,6 +28,7 @@ After which, you should be able to run `flutter test`.
 
 ### Responsiveness and font styling
 
+- [Theming in Flutter](https://flutter.dev/docs/cookbook/design/themes)
 - [Flutter: Using custom fonts](https://flutter.dev/docs/cookbook/design/fonts)
 - [Google Fonts library](https://pub.dev/packages/google_fonts)
 - [Google Fonts preview tool](https://fonts.google.com/)

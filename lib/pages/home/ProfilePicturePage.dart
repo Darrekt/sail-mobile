@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:spark/blocs/bloc_barrel.dart';
 import 'package:spark/components/home/ProfileAvatar.dart';
 import 'package:spark/components/util/SettingsGroup.dart';
-import 'package:spark/constants.dart';
+import 'package:spark/util/constants.dart';
 
 class ProfilePicturePage extends StatelessWidget {
   ProfilePicturePage({Key? key}) : super(key: key);

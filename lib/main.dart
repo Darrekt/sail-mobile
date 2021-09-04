@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:spark/components/navigation/navbar.dart';
-import 'package:spark/constants.dart';
+import 'package:spark/util/constants.dart';
 import 'package:spark/components/home/HomeDrawer.dart';
 import 'package:spark/pages/AlbumPage.dart';
 import 'package:spark/pages/home/HomePage.dart';
