@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spark/models/SparkUser.dart';
+import 'package:sail/models/SparkUser.dart';
 
 class ProfileAvatar extends StatelessWidget {
   const ProfileAvatar(this.user, {Key? key, required this.radius})

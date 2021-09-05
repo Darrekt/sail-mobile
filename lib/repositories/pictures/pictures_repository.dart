@@ -1,5 +1,5 @@
 import 'package:image_picker/image_picker.dart';
-import 'package:spark/models/SparkUser.dart';
+import 'package:sail/models/SparkUser.dart';
 
 abstract class PicturesRepository {
   /// Asynchronously fetch the URI of the user's profile image.

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:spark/blocs/bloc_barrel.dart';
-import 'package:spark/components/home/ProfileAvatar.dart';
-import 'package:spark/components/util/SettingsGroup.dart';
-import 'package:spark/util/constants.dart';
+import 'package:sail/blocs/bloc_barrel.dart';
+import 'package:sail/components/home/ProfileAvatar.dart';
+import 'package:sail/components/util/SettingsGroup.dart';
+import 'package:sail/util/constants.dart';
 
 class ProfilePicturePage extends StatelessWidget {
   ProfilePicturePage({Key? key}) : super(key: key);

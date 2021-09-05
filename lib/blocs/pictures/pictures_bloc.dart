@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:spark/blocs/auth/auth_bloc.dart';
-import 'package:spark/repositories/auth/auth_repository.dart';
-import 'package:spark/repositories/pictures/pictures_repository.dart';
+import 'package:sail/blocs/auth/auth_bloc.dart';
+import 'package:sail/repositories/auth/auth_repository.dart';
+import 'package:sail/repositories/pictures/pictures_repository.dart';
 
 part 'pictures_event.dart';
 part 'pictures_state.dart';

@@ -1,4 +1,4 @@
-import 'package:spark/models/SparkUser.dart';
+import 'package:sail/models/SparkUser.dart';
 
 // Thrown if the function is not implemented.
 class NotImplementedException implements Exception {}

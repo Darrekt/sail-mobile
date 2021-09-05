@@ -7,9 +7,9 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart' as mockito;
 import 'auth_bloc_test.mocks.dart';
 
-import 'package:spark/blocs/bloc_barrel.dart';
-import 'package:spark/models/SparkUser.dart';
-import 'package:spark/repositories/repositories_barrel.dart';
+import 'package:sail/blocs/bloc_barrel.dart';
+import 'package:sail/models/SparkUser.dart';
+import 'package:sail/repositories/repositories_barrel.dart';
 
 @GenerateMocks([FirebaseAuthRepository])
 void main() {

@@ -8,10 +8,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mockito/annotations.dart';
-import 'package:spark/repositories/repositories_barrel.dart';
+import 'package:sail/repositories/repositories_barrel.dart';
 import 'widget_test.mocks.dart';
 
-import 'package:spark/main.dart';
+import 'package:sail/main.dart';
 
 @GenerateMocks([FirebaseAuthRepository, FirebasePicturesRepository])
 void main() async {

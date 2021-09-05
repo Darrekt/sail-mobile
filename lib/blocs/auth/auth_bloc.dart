@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:spark/models/SparkUser.dart';
-import 'package:spark/repositories/auth/auth_repository.dart';
+import 'package:sail/models/SparkUser.dart';
+import 'package:sail/repositories/auth/auth_repository.dart';
 import 'package:equatable/equatable.dart';
 
 part 'auth_event.dart';

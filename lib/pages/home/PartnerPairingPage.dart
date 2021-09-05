@@ -4,11 +4,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spark/blocs/bloc_barrel.dart';
+import 'package:sail/blocs/bloc_barrel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:spark/components/util/SingleInputFormPage.dart';
-import 'package:spark/util/constants.dart';
+import 'package:sail/components/util/SingleInputFormPage.dart';
+import 'package:sail/util/constants.dart';
 
 class PartnerPairingPage extends StatefulWidget {
   const PartnerPairingPage({Key? key}) : super(key: key);

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spark/blocs/bloc_barrel.dart';
+import 'package:sail/blocs/bloc_barrel.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
-import 'package:spark/models/SparkUser.dart';
-import 'package:spark/pages/home/PartnerPairingPage.dart';
-import 'package:spark/pages/home/ProfilePicturePage.dart';
+import 'package:sail/models/SparkUser.dart';
+import 'package:sail/pages/home/PartnerPairingPage.dart';
+import 'package:sail/pages/home/ProfilePicturePage.dart';
 import 'ProfileAvatar.dart';
 
 class UserDisplay extends StatelessWidget {
