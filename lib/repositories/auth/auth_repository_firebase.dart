@@ -143,10 +143,10 @@ class FirebaseAuthRepository implements AuthRepository {
       // Once signed in, return the UserCredential
       return await _firebaseAuth.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
-      print(e.code);
+      print("Firebase error: ${e.code}");
       throw LogInWithGoogleFailure();
     } on PlatformException catch (e) {
-      print(e.code);
+      print("Platform Error: ${e.code}");
       throw LogInWithGoogleFailure();
     }
   }
