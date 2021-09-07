@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -12,6 +13,7 @@ import 'auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
   final CollectionReference<SparkUser> usersRef = FirebaseFirestore.instance
       .collection('users')
       .withConverter<SparkUser>(
@@ -22,17 +24,14 @@ class FirebaseAuthRepository implements AuthRepository {
   User? _user;
 
   FirebaseAuthRepository() {
-    _userSub = _firebaseAuth.authStateChanges().listen((user) {
+    _userSub = _firebaseAuth.authStateChanges().listen((user) async {
       _user = user;
-      if (user != null)
-        usersRef.doc(user.uid).set(
-            SparkUser(firebaseUser: user),
-            SetOptions(mergeFields: [
-              'id',
-              'name',
-              'email',
-              'photo',
-            ]));
+      if (user != null) {
+        await usersRef.doc(user.uid).set(
+            SparkUser(firebaseUser: user)
+                .copyWith(registrationToken: await messaging.getToken()),
+            SetOptions(mergeFields: ['registrationToken']));
+      }
     });
   }
 
@@ -152,6 +151,8 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   Future<SparkUser> findPartnerByEmail(String email) async {
+    // FIXME: Move to cloud function and remove client read access to DB entries that aren't theirs
+    // FIXME: check that the other person is not paired
     List<QueryDocumentSnapshot<SparkUser>> partnerQss = await usersRef
         .where('email', isEqualTo: email)
         .get()

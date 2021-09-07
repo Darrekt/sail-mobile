@@ -11,7 +11,7 @@
 				<string>Editor</string>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<string>com.googleusercontent.apps.322258910193-vlh904e1h4bo35fjno9hl85inqm39kqt</string>
+					<string>com.googleusercontent.apps.322258910193-9u6bdjvtm9kuoacs0t1vqdqau4p4su0i</string>
 				</array>
 				<!-- Facebook Sign-in Section -->
 				<key>CFBundleURLSchemes</key>
@@ -60,7 +60,7 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
-	<string>Sail</string>
+		<string>Sail</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>

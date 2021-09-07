@@ -10,8 +10,10 @@ class SparkUser extends Equatable {
   /// {@macro user}
   const SparkUser.fromScratch({
     required this.id,
+    this.registrationToken,
     this.partnerId,
     this.email,
+    this.emailVerified = false,
     this.name,
     this.photo,
   });
@@ -20,7 +22,10 @@ class SparkUser extends Equatable {
     return firebaseUser != null
         ? SparkUser.fromScratch(
             id: firebaseUser.uid,
+            registrationToken: null,
+            partnerId: null,
             email: firebaseUser.email,
+            emailVerified: firebaseUser.emailVerified,
             name: firebaseUser.displayName,
             photo: firebaseUser.photoURL,
           )
@@ -29,16 +34,37 @@ class SparkUser extends Equatable {
 
   SparkUser.fromJson(Map<String, Object?> json)
       : id = json['id'] as String,
+        registrationToken = json['registrationToken'] as String?,
         email = json['email'] as String?,
+        emailVerified = json['emailVerified'] as bool,
         partnerId = json['partnerId'] as String?,
         name = json['name'] as String?,
         photo = json['photo'] as String?;
 
+  SparkUser copyWith(
+          {String? registrationToken,
+          String? partnerId,
+          String? email,
+          bool? emailVerified,
+          String? name,
+          String? photo}) =>
+      SparkUser.fromScratch(
+        id: this.id,
+        registrationToken: registrationToken ?? this.registrationToken,
+        partnerId: partnerId ?? this.partnerId,
+        email: email ?? this.email,
+        emailVerified: emailVerified ?? this.emailVerified,
+        name: name ?? this.name,
+        photo: this.photo,
+      );
+
   Map<String, Object?> toJson() {
     return {
       'id': id,
+      'registrationToken': registrationToken,
       'partnerId': partnerId,
       'email': email,
+      'emailVerified': emailVerified,
       'name': name,
       'photo': photo,
     };
@@ -47,11 +73,17 @@ class SparkUser extends Equatable {
   /// The current user's id.
   final String id;
 
+  /// The registration token for the current app instance. Regenerated on every app restart.
+  final String? registrationToken;
+
   /// The current user's id.
   final String? partnerId;
 
   /// The current user's email address.
   final String? email;
+
+  /// The current user's email address.
+  final bool emailVerified;
 
   /// The current user's name (display name).
   final String? name;
