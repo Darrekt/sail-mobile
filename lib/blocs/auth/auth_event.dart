@@ -10,14 +10,47 @@ abstract class AuthEvent extends Equatable {
 class AppStarted extends AuthEvent {}
 
 class AuthStateUpdated extends AuthEvent {
-  final User? payload;
+  final SparkUser payload;
   AuthStateUpdated(this.payload);
 
   @override
-  List<Object> get props => [payload?.uid ?? ""];
+  List<Object> get props => [payload.id];
 
   @override
   String toString() => "AuthStateUpdated { user: $payload }";
+}
+
+class PartnerUpdated extends AuthEvent {
+  final SparkUser payload;
+  PartnerUpdated(this.payload);
+
+  @override
+  List<Object> get props => [payload.id];
+
+  @override
+  String toString() => "PartnerUpdated { partner: $payload }";
+}
+
+class TryFindPartner extends AuthEvent {
+  final String email;
+  TryFindPartner(this.email);
+
+  @override
+  List<Object> get props => [email];
+
+  @override
+  String toString() => "TryFindPartner { email: $email }";
+}
+
+class TryLinkPartner extends AuthEvent {
+  final String email, otp;
+  TryLinkPartner(this.email, this.otp);
+
+  @override
+  List<Object> get props => [email, otp];
+
+  @override
+  String toString() => "TryLinkPartner { email: $email, otp: $otp }";
 }
 
 class TryEmailSignUp extends AuthEvent {
@@ -49,5 +82,16 @@ class TryFacebookSignIn extends AuthEvent {}
 class TryGoogleSignIn extends AuthEvent {}
 
 class TryAppleSignIn extends AuthEvent {}
+
+class UpdateProfilePictureURI extends AuthEvent {
+  final String? payload;
+  UpdateProfilePictureURI(this.payload);
+
+  @override
+  List<Object> get props => [payload ?? ""];
+
+  @override
+  String toString() => "UpdateProfilePictureURI { payload: $payload }";
+}
 
 class Logout extends AuthEvent {}

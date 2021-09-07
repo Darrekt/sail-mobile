@@ -1,39 +1,19 @@
-import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spark/blocs/bloc_barrel.dart';
-import 'package:spark/components/util/SettingsGroup.dart';
-import 'package:spark/constants.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sail/blocs/bloc_barrel.dart';
+import 'package:sail/components/home/ProfileAvatar.dart';
+import 'package:sail/components/util/SettingsGroup.dart';
+import 'package:sail/util/constants.dart';
 
 class ProfilePicturePage extends StatelessWidget {
   ProfilePicturePage({Key? key}) : super(key: key);
-  final _storage = FirebaseStorage.instance;
-  final _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
     // final Size _deviceDimensions = MediaQuery.of(context).size;
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        Future<void> _uploadAndSetProfilePicture(String? filePath) async {
-          if (filePath == null || !(state is Authenticated)) return;
-          File file = File(filePath);
-
-          try {
-            await _storage
-                .ref('profile-pictures/${state.user.uid}.png')
-                .putFile(file);
-            await state.user.updatePhotoURL(
-                "gs://spark-69.appspot.com/profile-pictures/${state.user.uid}.png");
-          } on FirebaseException catch (e) {
-            // e.g, e.code == 'canceled'
-            // log(e.message);
-          }
-        }
-
         return Scaffold(
           appBar: AppBar(
             elevation: 0,
@@ -43,7 +23,7 @@ class ProfilePicturePage extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  // TODO: Move photo editing and upload to a modal actions in here
+                  // TODO: Move photo editing and upload to a modal action in here
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -53,11 +33,7 @@ class ProfilePicturePage extends StatelessWidget {
                       shape: CircleBorder(),
                       clipBehavior: Clip.antiAlias,
                       elevation: 8,
-                      child: CircleAvatar(
-                          radius: 69,
-                          backgroundImage: NetworkImage(state is Authenticated
-                              ? state.user.photoURL!
-                              : "")),
+                      child: ProfileAvatar(state.user, radius: 69),
                     ),
                   ),
                 ),
@@ -69,27 +45,31 @@ class ProfilePicturePage extends StatelessWidget {
                   children: [
                     IconButton(
                         onPressed: () async {
-                          final XFile? userImage = await _picker.pickImage(
-                              source: ImageSource.camera);
-                          _uploadAndSetProfilePicture(userImage?.path);
+                          context
+                              .read<PicturesBloc>()
+                              .add(UploadProfilePicture(ImageSource.camera));
                         },
                         icon: Icon(Icons.photo_camera)),
                     IconButton(
                         onPressed: () async {
-                          final XFile? userImage = await _picker.pickImage(
-                              source: ImageSource.gallery);
-                          _uploadAndSetProfilePicture(userImage?.path);
+                          context
+                              .read<PicturesBloc>()
+                              .add(UploadProfilePicture(ImageSource.gallery));
                         },
                         icon: Icon(Icons.photo_album)),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+                    IconButton(
+                        onPressed: () {
+                          context
+                              .read<PicturesBloc>()
+                              .add(ClearProfilePicture());
+                        },
+                        icon: Icon(Icons.delete)),
                   ],
                 ),
               ),
               SettingsGroup(
                   title: "Name",
-                  subtitle: state is Authenticated
-                      ? state.user.displayName!
-                      : "Anonymous",
+                  subtitle: state.user.name ?? "Anonymous",
                   onTrailingCallback: () {}),
               SettingsGroup(
                   title: "Location",
@@ -97,8 +77,18 @@ class ProfilePicturePage extends StatelessWidget {
                   onTrailingCallback: () {}),
               SettingsGroup(
                   title: "Email",
-                  subtitle: state is Authenticated ? state.user.email! : "",
+                  subtitle: state.user.email ?? "No registered email",
                   onTrailingCallback: () {}),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: ElevatedButton(
+                  child: const Text('Sign out'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    context.read<AuthBloc>().add(Logout());
+                  },
+                ),
+              ),
             ],
           ),
         );

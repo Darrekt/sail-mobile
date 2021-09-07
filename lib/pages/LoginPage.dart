@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sail/blocs/bloc_barrel.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:spark/blocs/bloc_barrel.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:sail/util/constants.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -71,12 +72,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: const InputDecoration(labelText: 'Email'),
             focusNode: _emailFocus,
             onEditingComplete: _pwFocus.requestFocus,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              return null;
-            },
+            validator: emailValidator,
           );
 
           final Widget passwordField = TextFormField(
@@ -141,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                   SignInButton(
                     Buttons.Facebook,
                     onPressed: () =>
-                        context.read<AuthBloc>().add(TryGoogleSignIn()),
+                        context.read<AuthBloc>().add(TryFacebookSignIn()),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8.0))),
                   ),

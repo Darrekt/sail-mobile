@@ -1,10 +1,9 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spark/blocs/bloc_barrel.dart';
-import 'package:spark/constants.dart';
-import 'package:spark/pages/home/ProfilePicturePage.dart';
+import 'package:sail/blocs/bloc_barrel.dart';
+import 'package:sail/components/home/UserDisplay.dart';
+import 'package:sail/util/constants.dart';
 
 class HomeDrawer extends StatelessWidget {
   HomeDrawer({Key? key}) : super(key: key);
@@ -13,15 +12,7 @@ class HomeDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     // final Size _deviceDimensions = MediaQuery.of(context).size;
 
-    final drawerItems = [
-      ListTile(
-        title: const Text('Sign out'),
-        onTap: () {
-          Navigator.pop(context);
-          context.read<AuthBloc>().add(Logout());
-        },
-      ),
-    ];
+    final drawerItems = [];
 
     final devDrawerItems = [
       ListTile(
@@ -48,44 +39,23 @@ class HomeDrawer extends StatelessWidget {
             children: [
               DrawerHeader(
                   decoration: BoxDecoration(color: Colors.cyan),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return ProfilePicturePage();
-                          }));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Hero(
-                              tag: HERO_TAG_DRAWER_PROFILE,
-                              child: CircleAvatar(
-                                  radius: 34.5,
-                                  backgroundImage: NetworkImage(
-                                      "https://picsum.photos/250?image=9"))),
+                      UserDisplay(
+                        state.user,
+                        heroTag: HERO_TAG_DRAWER_PROFILE,
+                      ),
+                      SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Placeholder(
+                          fallbackHeight: 30,
+                          fallbackWidth: 30,
                         ),
                       ),
-                      AutoSizeText(
-                        state is Authenticated
-                            ? state.user.displayName!
-                            : "Anonymous",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      AutoSizeText(
-                        "Singapore",
-                        minFontSize: 8,
-                        maxFontSize: 10,
-                      ),
-                      AutoSizeText(
-                        state is Authenticated
-                            ? state.user.email!
-                            : "Anonymous",
-                        minFontSize: 8,
-                        maxFontSize: 10,
-                      )
+                      UserDisplay(state.partner,
+                          crossAxisAlignment: CrossAxisAlignment.end),
                     ],
                   )),
               ...(kReleaseMode ? drawerItems : drawerItems + devDrawerItems),

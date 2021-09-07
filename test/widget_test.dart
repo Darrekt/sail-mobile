@@ -5,30 +5,24 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spark/main.dart';
-import 'package:spark/repositories/auth/auth_repository.dart';
-import 'package:spark/repositories/auth/auth_repository_firebase.dart';
 
-void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+import 'package:mockito/annotations.dart';
+import 'package:sail/repositories/repositories_barrel.dart';
+import 'widget_test.mocks.dart';
+
+import 'package:sail/main.dart';
+
+@GenerateMocks([FirebaseAuthRepository, FirebasePicturesRepository])
+void main() async {
+  testWidgets('App should be startable', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    final AuthRepository authRepository = FirebaseAuthRepository();
+    final AuthRepository authRepository = MockFirebaseAuthRepository();
+    final PicturesRepository picturesRepository =
+        MockFirebasePicturesRepository();
     await tester.pumpWidget(SparkApp(
       authRepository: authRepository,
+      picturesRepository: picturesRepository,
     ));
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
   });
 }
