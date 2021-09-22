@@ -10,7 +10,13 @@ class UserNotLoggedInException implements Exception {}
 class SignUpFailure implements Exception {}
 
 /// Thrown during the login process if a failure occurs.
-class LogInWithEmailFailure implements Exception {}
+class LogInWithEmailFailure implements Exception {
+  String code;
+  LogInWithEmailFailure(this.code);
+
+  @override
+  String toString() => this.code;
+}
 
 /// Thrown during the sign in with Google process if a failure occurs.
 class LogInWithGoogleFailure implements Exception {}

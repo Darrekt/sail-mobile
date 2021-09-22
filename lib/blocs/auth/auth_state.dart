@@ -11,17 +11,15 @@ abstract class AuthState extends Equatable {
 
 class AppLoading extends AuthState {}
 
-class Unauthenticated extends AuthState {}
-
-class LoginFailed extends Unauthenticated {
-  final String message;
-  LoginFailed(this.message);
+class Unauthenticated extends AuthState {
+  final String? reason;
+  Unauthenticated([this.reason]);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [reason ?? ""];
 
   @override
-  String toString() => "LoginFailed { message: $message }";
+  String toString() => "Unauthenticated { reason: $reason }";
 }
 
 class Authenticated extends AuthState {

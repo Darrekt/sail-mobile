@@ -91,8 +91,7 @@ class FirebaseAuthRepository implements AuthRepository {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      print(e.code);
-      throw LogInWithEmailFailure();
+      throw LogInWithEmailFailure(e.code);
     }
     return;
   }
@@ -101,7 +100,7 @@ class FirebaseAuthRepository implements AuthRepository {
     try {
       throw NotImplementedException();
     } catch (e) {
-      throw LogInWithEmailFailure();
+      throw LogInWithEmailFailure("Email link auth failed");
     }
   }
 

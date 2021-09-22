@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:sail/components/util/ErrorToast.dart';
 import 'package:sail/models/SparkUser.dart';
 import 'package:sail/repositories/auth/auth_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -70,7 +71,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await _auth.signUpEmail(event.email, event.password);
       } catch (e) {
-        yield LoginFailed("Failed to sign up user");
+        showErrorToast("Failed to sign up user");
       }
     }
     throw NotImplementedException();
@@ -80,8 +81,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (state is Unauthenticated) {
       try {
         await _auth.authenticateEmail(event.email, event.password);
+      } on LogInWithEmailFailure catch (e) {
+        // TODO: Make prettyPrintFirebaseAuthException to translate these
+        showErrorToast(e.code);
       } catch (e) {
-        yield LoginFailed(e.toString());
+        showErrorToast("An unknown error occurred.");
       }
     } else if (state is Authenticated) {
       await _auth.linkEmail(event.email, event.password);
@@ -92,7 +96,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _auth.authenticateFacebook();
     } catch (e) {
-      yield LoginFailed(e.toString());
+      showErrorToast(e.toString());
     }
   }
 
@@ -100,7 +104,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _auth.authenticateGoogle();
     } catch (e) {
-      yield LoginFailed(e.toString());
+      showErrorToast(e.toString());
     }
   }
 
@@ -108,7 +112,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _auth.authenticateApple();
     } catch (e) {
-      yield LoginFailed(e.toString());
+      showErrorToast(e.toString());
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sail/blocs/bloc_barrel.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:sail/components/util/ErrorToast.dart';
 import 'package:sail/util/constants.dart';
 
 class LoginPage extends StatefulWidget {
@@ -58,6 +59,8 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) Navigator.pop(context);
+          if (state is Unauthenticated && state.reason != null)
+            showErrorToast(state.reason!);
         },
         builder: (context, state) {
           final Widget heroLogo = Padding(
@@ -84,9 +87,8 @@ class _LoginPageState extends State<LoginPage> {
                 ? _submitForm(loginNotSignup)
                 : _cpwFocus.requestFocus(),
             validator: (value) {
-              if (value == null || value.isEmpty) {
+              if (value == null || value.isEmpty)
                 return 'Please enter your password';
-              }
               return null;
             },
           );
