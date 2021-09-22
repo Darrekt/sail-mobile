@@ -66,6 +66,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Stream<AuthState> _mapTryEmailSignUpToState(TryEmailSignUp event) async* {
+    if (state is Unauthenticated) {
+      try {
+        await _auth.signUpEmail(event.email, event.password);
+      } catch (e) {
+        yield LoginFailed("Failed to sign up user");
+      }
+    }
     throw NotImplementedException();
   }
 
@@ -115,10 +122,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Stream<AuthState> _mapTryFindPartnerToState(TryFindPartner event) async* {
     if (state is Authenticated) {
-      final SparkUser result = await _auth.findPartnerByEmail(event.email);
-      yield result.isNotEmpty
-          ? PairingInProgress(state.user, result.email!)
-          : PairingFailed(state.user, "No user is associated with that email.");
+      _auth.findPartnerByEmail(event.email);
     } else
       throw UserNotLoggedInException();
   }

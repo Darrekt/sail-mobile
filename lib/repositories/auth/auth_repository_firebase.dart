@@ -3,8 +3,9 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/services.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sail/models/SparkUser.dart';
@@ -79,6 +80,7 @@ class FirebaseAuthRepository implements AuthRepository {
       throw SignUpFailure();
     } catch (e) {
       log(e.toString());
+      throw SignUpFailure();
     }
   }
 
@@ -150,15 +152,15 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
-  Future<SparkUser> findPartnerByEmail(String email) async {
-    // FIXME: Move to cloud function and remove client read access to DB entries that aren't theirs
-    // FIXME: check that the other person is not paired
-    List<QueryDocumentSnapshot<SparkUser>> partnerQss = await usersRef
-        .where('email', isEqualTo: email)
-        .get()
-        .then((snapshot) => snapshot.docs);
-
-    return partnerQss.length != 0 ? partnerQss[0].data() : SparkUser.empty;
+  Future<void> findPartnerByEmail(String email) async {
+    print("Starting function");
+    HttpsCallable promptPartner =
+        FirebaseFunctions.instance.httpsCallable('findPartnerByEmail');
+    var result = await promptPartner.call(<String, dynamic>{
+      'email': email,
+      'name': _user?.displayName ?? "Anon",
+    });
+    print(result.toString());
   }
 
   Future<void> setupPairing(String email) {

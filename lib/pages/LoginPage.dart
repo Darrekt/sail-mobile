@@ -94,6 +94,7 @@ class _LoginPageState extends State<LoginPage> {
           final Widget confirmPasswordField = TextFormField(
             controller: _confirmPasswordController,
             decoration: const InputDecoration(labelText: 'Confirm Password'),
+            obscureText: true,
             focusNode: _cpwFocus,
             onEditingComplete: () => _submitForm(loginNotSignup),
             validator: (value) {

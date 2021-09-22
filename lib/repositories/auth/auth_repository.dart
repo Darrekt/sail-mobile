@@ -77,7 +77,7 @@ abstract class AuthRepository {
     throw NotImplementedException();
   }
 
-  Future<SparkUser> findPartnerByEmail(String email) {
+  Future<void> findPartnerByEmail(String email) {
     throw NotImplementedException();
   }
 
