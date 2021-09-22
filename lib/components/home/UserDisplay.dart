@@ -13,11 +13,13 @@ class UserDisplay extends StatelessWidget {
     this.user, {
     Key? key,
     this.heroTag,
+    this.onTap,
     this.crossAxisAlignment = CrossAxisAlignment.start,
   }) : super(key: key);
   final String? heroTag;
   final SparkUser user;
   final CrossAxisAlignment crossAxisAlignment;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class UserDisplay extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
+                if (onTap != null) onTap!();
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return user == SparkUser.empty
                       ? PartnerPairingPage()
