@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:sail/components/util/ErrorToast.dart';
 import 'package:sail/models/SparkUser.dart';
 import 'package:sail/repositories/auth/auth_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -66,6 +67,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Stream<AuthState> _mapTryEmailSignUpToState(TryEmailSignUp event) async* {
+    if (state is Unauthenticated) {
+      try {
+        await _auth.signUpEmail(event.email, event.password);
+      } on SignUpFailure catch (e) {
+        showErrorToast(e.message);
+      }
+    }
     throw NotImplementedException();
   }
 
@@ -73,8 +81,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (state is Unauthenticated) {
       try {
         await _auth.authenticateEmail(event.email, event.password);
-      } catch (e) {
-        yield LoginFailed(e.toString());
+      } on LogInWithEmailFailure catch (e) {
+        showErrorToast(e.message);
       }
     } else if (state is Authenticated) {
       await _auth.linkEmail(event.email, event.password);
@@ -84,25 +92,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Stream<AuthState> _mapTryFacebookSignInToState() async* {
     try {
       await _auth.authenticateFacebook();
-    } catch (e) {
-      yield LoginFailed(e.toString());
+    } on LogInWithFacebookFailure catch (e) {
+      showErrorToast(e.message);
     }
   }
 
   Stream<AuthState> _mapTryGoogleSignInToState() async* {
     try {
       await _auth.authenticateGoogle();
-    } catch (e) {
-      yield LoginFailed(e.toString());
+    } on LogInWithGoogleFailure catch (e) {
+      showErrorToast(e.message);
     }
   }
 
   Stream<AuthState> _mapTryAppleSignInToState() async* {
     try {
       await _auth.authenticateApple();
-    } catch (e) {
-      yield LoginFailed(e.toString());
+    } on LogInWithAppleFailure catch (e) {
+      showErrorToast(e.message);
     }
+  }
+
+  Stream<AuthState> _mapUpdateProfilePictureURIToState(
+      UpdateProfilePictureURI event) async* {
+    await _auth.updateProfilePictureURI(event.payload);
+  }
+
+  Stream<AuthState> _mapLogOutToState() async* {
+    await _auth.logout();
   }
 
   Stream<AuthState> _mapPartnerUpdatedToState(PartnerUpdated event) async* {
@@ -115,10 +132,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Stream<AuthState> _mapTryFindPartnerToState(TryFindPartner event) async* {
     if (state is Authenticated) {
-      final SparkUser result = await _auth.findPartnerByEmail(event.email);
-      yield result.isNotEmpty
-          ? PairingInProgress(state.user, result.email!)
-          : PairingFailed(state.user, "No user is associated with that email.");
+      _auth.findPartnerByEmail(event.email);
     } else
       throw UserNotLoggedInException();
   }
@@ -129,15 +143,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Stream<AuthState> _mapTryLinkPartnerToState(TryLinkPartner event) async* {
     if (state is PairingInProgress) _auth.tryPairingOTP(event.email, event.otp);
-  }
-
-  Stream<AuthState> _mapUpdateProfilePictureURIToState(
-      UpdateProfilePictureURI event) async* {
-    await _auth.updateProfilePictureURI(event.payload);
-  }
-
-  Stream<AuthState> _mapLogOutToState() async* {
-    await _auth.logout();
   }
 
   @override

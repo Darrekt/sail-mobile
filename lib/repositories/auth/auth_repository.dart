@@ -1,28 +1,41 @@
 import 'package:sail/models/SparkUser.dart';
+import 'package:sail/util/exceptions/SailException.dart';
 
 // Thrown if the function is not implemented.
-class NotImplementedException implements Exception {}
+class NotImplementedException extends SailException {
+  NotImplementedException() : super("Not implemented");
+}
 
 // Thrown if some sensitive action was attempted, but no user was found logged in.
-class UserNotLoggedInException implements Exception {}
+class UserNotLoggedInException extends SailException {
+  UserNotLoggedInException()
+      : super("You have to be logged in to perform this action.");
+}
 
 // Thrown if during the sign up process if a failure occurs.
-class SignUpFailure implements Exception {}
+class SignUpFailure extends SailException {
+  SignUpFailure(String message) : super(message);
+}
 
 /// Thrown during the login process if a failure occurs.
-class LogInWithEmailFailure implements Exception {}
+class LogInWithEmailFailure extends SailException {
+  LogInWithEmailFailure(String message) : super(message);
+}
 
 /// Thrown during the sign in with Google process if a failure occurs.
-class LogInWithGoogleFailure implements Exception {}
+class LogInWithGoogleFailure extends SailException {
+  LogInWithGoogleFailure(String message) : super(message);
+}
 
 /// Thrown during the sign in with Facebook process if a failure occurs.
-class LogInWithFacebookFailure implements Exception {}
+class LogInWithFacebookFailure extends SailException {
+  LogInWithFacebookFailure(String message) : super(message);
+}
 
 /// Thrown during the sign in with Apple process if a failure occurs.
-class LogInWithAppleFailure implements Exception {}
-
-/// Thrown during the logout process if a failure occurs.
-class LogOutFailure implements Exception {}
+class LogInWithAppleFailure extends SailException {
+  LogInWithAppleFailure(String message) : super(message);
+}
 
 /// {@template authentication_repository}
 /// Repository which manages user authentication.
@@ -77,7 +90,7 @@ abstract class AuthRepository {
     throw NotImplementedException();
   }
 
-  Future<SparkUser> findPartnerByEmail(String email) {
+  Future<void> findPartnerByEmail(String email) {
     throw NotImplementedException();
   }
 

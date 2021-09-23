@@ -11,21 +11,20 @@ class HomeDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final Size _deviceDimensions = MediaQuery.of(context).size;
-
     final drawerItems = [];
 
     final devDrawerItems = [
       ListTile(
         title: const Text('Go to onboarding'),
         onTap: () {
+          Navigator.of(context).pop();
           Navigator.pushNamed(context, '/onboarding');
         },
       ),
       ListTile(
         title: const Text('Clear onboarding key'),
         onTap: () {
-          // Update the state of the app.
-          // ...
+          Navigator.of(context).pop();
         },
       ),
     ];
@@ -33,33 +32,39 @@ class HomeDrawer extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         return Drawer(
-          child: ListView(
-            // Important: Remove any padding from the ListView.
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                  decoration: BoxDecoration(color: Colors.cyan),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      UserDisplay(
-                        state.user,
-                        heroTag: HERO_TAG_DRAWER_PROFILE,
-                      ),
-                      SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Placeholder(
-                          fallbackHeight: 30,
-                          fallbackWidth: 30,
+          child: GestureDetector(
+            child: ListView(
+              // Important: Remove any padding from the ListView.
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.cyan),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        UserDisplay(
+                          state.user,
+                          heroTag: HERO_TAG_DRAWER_PROFILE,
+                          onTap: () => Navigator.pop(context),
                         ),
-                      ),
-                      UserDisplay(state.partner,
-                          crossAxisAlignment: CrossAxisAlignment.end),
-                    ],
-                  )),
-              ...(kReleaseMode ? drawerItems : drawerItems + devDrawerItems),
-            ],
+                        SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: Placeholder(
+                            fallbackHeight: 30,
+                            fallbackWidth: 30,
+                          ),
+                        ),
+                        UserDisplay(
+                          state.partner,
+                          onTap: () => Navigator.pop(context),
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                        ),
+                      ],
+                    )),
+                ...(kReleaseMode ? drawerItems : drawerItems + devDrawerItems),
+              ],
+            ),
           ),
         );
       },
