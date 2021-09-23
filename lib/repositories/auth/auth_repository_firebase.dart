@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -8,8 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sail/components/util/ErrorToast.dart';
 import 'package:sail/models/SparkUser.dart';
-
+import 'package:sail/util/exceptions/prettyPrintExceptions.dart';
 import 'auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
@@ -72,15 +71,9 @@ class FirebaseAuthRepository implements AuthRepository {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        log('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        log('The account already exists for that email.');
-      }
-      throw SignUpFailure();
+      throw SignUpFailure(prettyPrintFirebaseAuthExceptions(e));
     } catch (e) {
-      log(e.toString());
-      throw SignUpFailure();
+      throw SignUpFailure("An unknown error occurred: ${e.toString()}");
     }
   }
 
@@ -91,24 +84,33 @@ class FirebaseAuthRepository implements AuthRepository {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      throw LogInWithEmailFailure(e.code);
+      throw LogInWithEmailFailure(prettyPrintFirebaseAuthExceptions(e));
+    } catch (e) {
+      showErrorToast(e.toString());
     }
-    return;
   }
 
   Future<void> authenticateEmailLink(String email) async {
     try {
       throw NotImplementedException();
+    } on FirebaseAuthException catch (e) {
+      throw LogInWithEmailFailure(prettyPrintFirebaseAuthExceptions(e));
     } catch (e) {
-      throw LogInWithEmailFailure("Email link auth failed");
+      showErrorToast(e.toString());
     }
   }
 
   Future<void> authenticateApple() async {
-    throw NotImplementedException();
+    try {
+      throw NotImplementedException();
+    } on FirebaseAuthException catch (e) {
+      throw LogInWithAppleFailure(prettyPrintFirebaseAuthExceptions(e));
+    } catch (e) {
+      showErrorToast(e.toString());
+    }
   }
 
-  Future<UserCredential> authenticateFacebook() async {
+  Future<void> authenticateFacebook() async {
     try {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
@@ -117,15 +119,16 @@ class FirebaseAuthRepository implements AuthRepository {
       final OAuthCredential facebookAuthCredential =
           FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
-      if (loginResult.status == LoginStatus.success) {}
-      // Once signed in, return the UserCredential
-      return _firebaseAuth.signInWithCredential(facebookAuthCredential);
+      if (loginResult.status == LoginStatus.success)
+        await _firebaseAuth.signInWithCredential(facebookAuthCredential);
+    } on FirebaseAuthException catch (e) {
+      throw LogInWithFacebookFailure(prettyPrintFirebaseAuthExceptions(e));
     } catch (e) {
-      throw LogInWithFacebookFailure();
+      showErrorToast(e.toString());
     }
   }
 
-  Future<UserCredential> authenticateGoogle() async {
+  Future<void> authenticateGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -139,18 +142,33 @@ class FirebaseAuthRepository implements AuthRepository {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-
-      // Once signed in, return the UserCredential
-      return await _firebaseAuth.signInWithCredential(credential);
+      await _firebaseAuth.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
-      print("Firebase error: ${e.code}");
-      throw LogInWithGoogleFailure();
+      throw LogInWithGoogleFailure(prettyPrintFirebaseAuthExceptions(e));
     } on PlatformException catch (e) {
-      print("Platform Error: ${e.code}");
-      throw LogInWithGoogleFailure();
+      throw LogInWithGoogleFailure(e.toString());
     }
   }
 
+  Future<void> updateProfilePictureURI(String? uri) async {
+    if (_user != null)
+      await _user!.updatePhotoURL(uri);
+    else
+      throw UserNotLoggedInException();
+  }
+
+  Future<void> logout() async {
+    return await _firebaseAuth.signOut();
+  }
+
+  Future<void> linkEmail(String email, String password) async {
+    final eCred =
+        EmailAuthProvider.credential(email: email, password: password);
+    await _firebaseAuth.currentUser?.linkWithCredential(eCred);
+    return;
+  }
+
+// TODO: Extract out into another bloc
   Future<void> findPartnerByEmail(String email) async {
     print("Starting function");
     HttpsCallable promptPartner =
@@ -174,24 +192,6 @@ class FirebaseAuthRepository implements AuthRepository {
 
     // If successful write to both users' partnerId field and trigger listeners on both clients.
     throw NotImplementedException();
-  }
-
-  Future<void> updateProfilePictureURI(String? uri) async {
-    if (_user != null)
-      await _user!.updatePhotoURL(uri);
-    else
-      throw UserNotLoggedInException();
-  }
-
-  Future<void> logout() async {
-    return await _firebaseAuth.signOut();
-  }
-
-  Future<void> linkEmail(String email, String password) async {
-    final eCred =
-        EmailAuthProvider.credential(email: email, password: password);
-    await _firebaseAuth.currentUser?.linkWithCredential(eCred);
-    return;
   }
 
   // Not sure, searched high and low for how to cancel StreamSubscriptions in non-widget classes in Dart.

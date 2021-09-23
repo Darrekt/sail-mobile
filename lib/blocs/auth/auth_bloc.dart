@@ -70,8 +70,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (state is Unauthenticated) {
       try {
         await _auth.signUpEmail(event.email, event.password);
-      } catch (e) {
-        showErrorToast("Failed to sign up user");
+      } on SignUpFailure catch (e) {
+        showErrorToast(e.message);
       }
     }
     throw NotImplementedException();
@@ -82,10 +82,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await _auth.authenticateEmail(event.email, event.password);
       } on LogInWithEmailFailure catch (e) {
-        // TODO: Make prettyPrintFirebaseAuthException to translate these
-        showErrorToast(e.code);
-      } catch (e) {
-        showErrorToast("An unknown error occurred.");
+        showErrorToast(e.message);
       }
     } else if (state is Authenticated) {
       await _auth.linkEmail(event.email, event.password);
@@ -95,25 +92,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Stream<AuthState> _mapTryFacebookSignInToState() async* {
     try {
       await _auth.authenticateFacebook();
-    } catch (e) {
-      showErrorToast(e.toString());
+    } on LogInWithFacebookFailure catch (e) {
+      showErrorToast(e.message);
     }
   }
 
   Stream<AuthState> _mapTryGoogleSignInToState() async* {
     try {
       await _auth.authenticateGoogle();
-    } catch (e) {
-      showErrorToast(e.toString());
+    } on LogInWithGoogleFailure catch (e) {
+      showErrorToast(e.message);
     }
   }
 
   Stream<AuthState> _mapTryAppleSignInToState() async* {
     try {
       await _auth.authenticateApple();
-    } catch (e) {
-      showErrorToast(e.toString());
+    } on LogInWithAppleFailure catch (e) {
+      showErrorToast(e.message);
     }
+  }
+
+  Stream<AuthState> _mapUpdateProfilePictureURIToState(
+      UpdateProfilePictureURI event) async* {
+    await _auth.updateProfilePictureURI(event.payload);
+  }
+
+  Stream<AuthState> _mapLogOutToState() async* {
+    await _auth.logout();
   }
 
   Stream<AuthState> _mapPartnerUpdatedToState(PartnerUpdated event) async* {
@@ -137,15 +143,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Stream<AuthState> _mapTryLinkPartnerToState(TryLinkPartner event) async* {
     if (state is PairingInProgress) _auth.tryPairingOTP(event.email, event.otp);
-  }
-
-  Stream<AuthState> _mapUpdateProfilePictureURIToState(
-      UpdateProfilePictureURI event) async* {
-    await _auth.updateProfilePictureURI(event.payload);
-  }
-
-  Stream<AuthState> _mapLogOutToState() async* {
-    await _auth.logout();
   }
 
   @override
