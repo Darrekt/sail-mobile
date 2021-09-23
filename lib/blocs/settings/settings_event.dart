@@ -6,8 +6,3 @@ abstract class SettingsEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
-
-class LinkPartner extends SettingsEvent {
-  final User payload;
-  LinkPartner(this.payload);
-}

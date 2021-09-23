@@ -48,65 +48,6 @@ void main() {
       act: (AuthBloc bloc) => bloc.add(AppStarted()),
       expect: () => [Authenticated(testUser)],
     );
-
-    blocTest(
-      'Emits authenticated and paired states after startup',
-      build: () => auth,
-      setUp: () {
-        mockito
-            .when(mockRepo.getUser())
-            .thenAnswer((_) => Stream.fromIterable([testUser]));
-
-        mockito
-            .when(mockRepo.getPartner(testUser))
-            .thenAnswer((_) => Stream.fromIterable([testPartner]));
-      },
-      act: (AuthBloc bloc) => bloc.add(AppStarted()),
-      expect: () => [Authenticated(testUser), Paired(testUser, testPartner)],
-    );
-  });
-
-  group('Auth Bloc logout checks', () {
-    late MockFirebaseAuthRepository mockRepo;
-    late AuthBloc auth;
-    late StreamController<SparkUser> userStreamController;
-
-    setUp(() {
-      mockRepo = MockFirebaseAuthRepository();
-      auth = AuthBloc(auth: mockRepo);
-      userStreamController = StreamController();
-    });
-
-    tearDown(() => userStreamController.close());
-
-    blocTest(
-      'Emits Unauthenticated from paired state on logout',
-      build: () => auth,
-      setUp: () {
-        mockito
-            .when(mockRepo.getUser())
-            .thenAnswer((_) => userStreamController.stream);
-
-        mockito
-            .when(mockRepo.getPartner(testUser))
-            .thenAnswer((_) => Stream.fromIterable([testPartner]));
-
-        mockito
-            .when(mockRepo.logout())
-            .thenAnswer((_) async => userStreamController.add(SparkUser.empty));
-      },
-      act: (AuthBloc bloc) async {
-        bloc.add(AppStarted());
-        userStreamController.add(testUser);
-        await Future.delayed(Duration(microseconds: 10));
-        bloc.add(Logout());
-      },
-      expect: () => [
-        Authenticated(testUser),
-        Paired(testUser, testPartner),
-        Unauthenticated(),
-      ],
-    );
   });
 
   group('Auth Bloc logout checks', () {
@@ -131,10 +72,6 @@ void main() {
             .thenAnswer((_) => userStreamController.stream);
 
         mockito
-            .when(mockRepo.getPartner(testUser))
-            .thenAnswer((_) => Stream.fromIterable([SparkUser.empty]));
-
-        mockito
             .when(mockRepo.logout())
             .thenAnswer((_) async => userStreamController.add(SparkUser.empty));
       },
@@ -146,35 +83,6 @@ void main() {
       },
       expect: () => [
         Authenticated(testUser),
-        Unauthenticated(),
-      ],
-    );
-
-    blocTest(
-      'Emits Unauthenticated from Paired state on logout',
-      build: () => auth,
-      setUp: () {
-        mockito
-            .when(mockRepo.getUser())
-            .thenAnswer((_) => userStreamController.stream);
-
-        mockito
-            .when(mockRepo.getPartner(testUser))
-            .thenAnswer((_) => Stream.fromIterable([testPartner]));
-
-        mockito
-            .when(mockRepo.logout())
-            .thenAnswer((_) async => userStreamController.add(SparkUser.empty));
-      },
-      act: (AuthBloc bloc) async {
-        bloc.add(AppStarted());
-        userStreamController.add(testUser);
-        await Future.delayed(Duration(microseconds: 10));
-        bloc.add(Logout());
-      },
-      expect: () => [
-        Authenticated(testUser),
-        Paired(testUser, testPartner),
         Unauthenticated(),
       ],
     );
@@ -200,10 +108,6 @@ void main() {
         mockito
             .when(mockRepo.getUser())
             .thenAnswer((_) => userStreamController.stream);
-
-        mockito
-            .when(mockRepo.getPartner(testUser))
-            .thenAnswer((_) => Stream.fromIterable([testPartner]));
       },
       act: (AuthBloc bloc) {
         bloc.add(AppStarted());
@@ -211,7 +115,6 @@ void main() {
       },
       expect: () => [
         Authenticated(testUser),
-        Paired(testUser, testPartner),
       ],
     );
   });

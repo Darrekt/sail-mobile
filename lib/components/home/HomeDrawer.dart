@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sail/blocs/bloc_barrel.dart';
 import 'package:sail/components/home/UserDisplay.dart';
+import 'package:sail/models/SparkUser.dart';
 import 'package:sail/util/constants.dart';
 
 class HomeDrawer extends StatelessWidget {
@@ -56,7 +57,7 @@ class HomeDrawer extends StatelessWidget {
                           ),
                         ),
                         UserDisplay(
-                          state.partner,
+                          SparkUser.empty,
                           onTap: () => Navigator.pop(context),
                           crossAxisAlignment: CrossAxisAlignment.end,
                         ),

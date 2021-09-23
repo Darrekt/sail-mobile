@@ -11,7 +11,6 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _auth;
   StreamSubscription<SparkUser>? _userSubscription;
-  StreamSubscription<SparkUser>? _partnerSubscription;
 
   AuthBloc({required AuthRepository auth})
       : _auth = auth,
@@ -33,12 +32,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       yield* _mapTryGoogleSignInToState();
     } else if (event is TryAppleSignIn) {
       yield* _mapTryAppleSignInToState();
-    } else if (event is PartnerUpdated) {
-      yield* _mapPartnerUpdatedToState(event);
-    } else if (event is TryFindPartner) {
-      yield* _mapTryFindPartnerToState(event);
-    } else if (event is TryLinkPartner) {
-      yield* _mapTryLinkPartnerToState(event);
     } else if (event is UpdateProfilePictureURI) {
       yield* _mapUpdateProfilePictureURIToState(event);
     } else if (event is Logout) {
@@ -55,15 +48,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Stream<AuthState> _mapAuthStateUpdatedToState(AuthStateUpdated event) async* {
-    SparkUser user = event.payload;
-    if (user == SparkUser.empty)
-      yield Unauthenticated();
-    else {
-      // if (_partnerSubscription != null) _partnerSubscription!.cancel();
-      // _partnerSubscription =
-      //     _auth.getPartner(user).listen((event) => add(PartnerUpdated(event)));
-      yield Authenticated(user);
-    }
+    yield event.payload.isEmpty
+        ? Unauthenticated()
+        : Authenticated(event.payload);
   }
 
   Stream<AuthState> _mapTryEmailSignUpToState(TryEmailSignUp event) async* {
@@ -73,8 +60,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } on SignUpFailure catch (e) {
         showErrorToast(e.message);
       }
+    } else {
+      await _auth.linkEmail(event.email, event.password);
     }
-    throw NotImplementedException();
   }
 
   Stream<AuthState> _mapTryEmailSignInToState(TryEmailSignIn event) async* {
@@ -84,8 +72,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } on LogInWithEmailFailure catch (e) {
         showErrorToast(e.message);
       }
-    } else if (state is Authenticated) {
-      await _auth.linkEmail(event.email, event.password);
     }
   }
 
@@ -122,34 +108,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await _auth.logout();
   }
 
-  Stream<AuthState> _mapPartnerUpdatedToState(PartnerUpdated event) async* {
-    final SparkUser partner = event.payload;
-    AuthState currentState = state;
-
-    if (partner != SparkUser.empty && currentState is Authenticated)
-      yield Paired(currentState.user, partner);
-  }
-
-  Stream<AuthState> _mapTryFindPartnerToState(TryFindPartner event) async* {
-    if (state is Authenticated) {
-      _auth.findPartnerByEmail(event.email);
-    } else
-      throw UserNotLoggedInException();
-  }
-
-  // Stream<AuthState> _mapSetupPairingToState(SetupPairing event) async* {
-  //   if (state is PairingInProgress) _auth.setupPairing(event.email);
-  // }
-
-  Stream<AuthState> _mapTryLinkPartnerToState(TryLinkPartner event) async* {
-    if (state is PairingInProgress) _auth.tryPairingOTP(event.email, event.otp);
-  }
-
   @override
   Future<void> close() {
     // ignore_for_file: cancel_subscriptions
     if (_userSubscription != null) _userSubscription!.cancel();
-    if (_partnerSubscription != null) _partnerSubscription!.cancel();
     return super.close();
   }
 }

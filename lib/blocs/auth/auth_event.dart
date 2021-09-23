@@ -20,39 +20,6 @@ class AuthStateUpdated extends AuthEvent {
   String toString() => "AuthStateUpdated { user: $payload }";
 }
 
-class PartnerUpdated extends AuthEvent {
-  final SparkUser payload;
-  PartnerUpdated(this.payload);
-
-  @override
-  List<Object> get props => [payload.id];
-
-  @override
-  String toString() => "PartnerUpdated { partner: $payload }";
-}
-
-class TryFindPartner extends AuthEvent {
-  final String email;
-  TryFindPartner(this.email);
-
-  @override
-  List<Object> get props => [email];
-
-  @override
-  String toString() => "TryFindPartner { email: $email }";
-}
-
-class TryLinkPartner extends AuthEvent {
-  final String email, otp;
-  TryLinkPartner(this.email, this.otp);
-
-  @override
-  List<Object> get props => [email, otp];
-
-  @override
-  String toString() => "TryLinkPartner { email: $email, otp: $otp }";
-}
-
 class TryEmailSignUp extends AuthEvent {
   final String email;
   final String password;

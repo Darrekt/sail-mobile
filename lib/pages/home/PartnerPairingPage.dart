@@ -50,14 +50,14 @@ class _PartnerPairingPageState extends State<PartnerPairingPage> {
 
     void _findPartner() {
       if (_formKey.currentState!.validate())
-        context.read<AuthBloc>().add(TryFindPartner(_emailController.text));
+        context.read<PartnerBloc>().add(FindPartner(_emailController.text));
     }
 
     void _submitOTP() {
       if (_formKey.currentState!.validate())
         context
-            .read<AuthBloc>()
-            .add(TryLinkPartner(_emailController.text, _otpController.text));
+            .read<PartnerBloc>()
+            .add(LinkPartner(_emailController.text, _otpController.text));
     }
 
     final Widget emailField = TextFormField(
@@ -108,7 +108,7 @@ class _PartnerPairingPageState extends State<PartnerPairingPage> {
       },
     );
 
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<PartnerBloc, PartnerState>(
       listener: (context, state) {
         if (state is PairingInProgress) {
           setState(() {
