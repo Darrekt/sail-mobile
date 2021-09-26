@@ -12,7 +12,15 @@ class HomeDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final Size _deviceDimensions = MediaQuery.of(context).size;
-    final drawerItems = [];
+    final drawerItems = [
+      ListTile(
+        title: const Text('Sign out'),
+        onTap: () {
+          Navigator.of(context).pop();
+          context.read<AuthBloc>().add(Logout());
+        },
+      ),
+    ];
 
     final devDrawerItems = [
       ListTile(
@@ -33,39 +41,37 @@ class HomeDrawer extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         return Drawer(
-          child: GestureDetector(
-            child: ListView(
-              // Important: Remove any padding from the ListView.
-              padding: EdgeInsets.zero,
-              children: [
-                DrawerHeader(
-                    decoration: BoxDecoration(color: Colors.cyan),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        UserDisplay(
-                          state.user,
-                          heroTag: HERO_TAG_DRAWER_PROFILE,
-                          onTap: () => Navigator.pop(context),
+          child: ListView(
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.cyan),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      UserDisplay(
+                        state.user,
+                        heroTag: HERO_TAG_DRAWER_PROFILE,
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Placeholder(
+                          fallbackHeight: 30,
+                          fallbackWidth: 30,
                         ),
-                        SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: Placeholder(
-                            fallbackHeight: 30,
-                            fallbackWidth: 30,
-                          ),
-                        ),
-                        UserDisplay(
-                          SparkUser.empty,
-                          onTap: () => Navigator.pop(context),
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                        ),
-                      ],
-                    )),
-                ...(kReleaseMode ? drawerItems : drawerItems + devDrawerItems),
-              ],
-            ),
+                      ),
+                      UserDisplay(
+                        SparkUser.empty,
+                        onTap: () => Navigator.pop(context),
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                      ),
+                    ],
+                  )),
+              ...(kReleaseMode ? drawerItems : drawerItems + devDrawerItems),
+            ],
           ),
         );
       },
