@@ -24,18 +24,18 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  firebase_core: ^1.4.0
-  firebase_auth: ^3.1.0
-  firebase_storage: ^10.0.1
-  firebase_messaging: ^10.0.6
-  cloud_firestore: ^2.5.0
-  cloud_functions: ^3.0.3
+  firebase_core: ^1.10.0
+  firebase_auth: ^3.2.0
+  firebase_storage: ^10.1.0
+  firebase_messaging: ^11.1.0
+  cloud_firestore: ^3.1.0
+  cloud_functions: ^3.1.1
   google_sign_in: ^5.0.7
   flutter_facebook_auth: ^3.5.0
   sign_in_with_apple: ^3.0.0
   crypto: ^3.0.1
   equatable: ^2.0.3
-  flutter_svg: ^0.22.0
+  flutter_svg: ^0.23.0+1
   shared_preferences: ^2.0.6
   auto_size_text: ^3.0.0-nullsafety.0
   flutter_native_splash: ^1.2.1
@@ -43,8 +43,8 @@ dependencies:
   persistent_bottom_nav_bar: ^4.0.2
   flutter_signin_button: ^2.0.0
   image_picker: ^0.8.3+2
-  bloc: ^7.2.0
-  flutter_bloc: ^7.3.0
+  bloc: ^8.0.1
+  flutter_bloc: ^8.0.0
   fluttertoast: ^8.0.8
   pin_code_fields: ^7.3.0
   email_validator: ^2.0.1
@@ -52,12 +52,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  bloc_test: ^8.2.0
+  bloc_test: ^9.0.1
   firebase_auth_mocks: ^0.8.0
   google_sign_in_mocks: ^0.2.1
   mockito: ^5.0.15
   build_runner: ^2.1.1
-  mocktail: ^0.1.4
+  mocktail: ^0.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

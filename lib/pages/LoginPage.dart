@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
 
-          //TODO: Turn into mini button row. I hate these libraries.
+          //TODO: Turn into mini button row
           final Widget socialSignInButtonBar = Container(
               width: MediaQuery.of(context).size.width * 0.55,
               child: Column(
