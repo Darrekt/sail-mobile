@@ -24,7 +24,10 @@ import 'package:sail/repositories/pictures/pictures_repository.dart';
 import 'package:sail/repositories/pictures/pictures_repository_firebase.dart';
 
 Future<void> main() async {
-  Bloc.observer = SparkBlocObserver();
+  BlocOverrides.runZoned(
+    () {},
+    blocObserver: SparkBlocObserver(),
+  );
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final AuthRepository authRepo = FirebaseAuthRepository();
