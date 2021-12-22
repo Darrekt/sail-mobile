@@ -1,16 +1,14 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:sail/blocs/auth/auth_bloc.dart';
 
 part 'offers_event.dart';
 part 'offers_state.dart';
 
 class OffersBloc extends Bloc<OffersEvent, OffersState> {
-  OffersBloc() : super(OffersInitial());
+  final AuthBloc _authBloc;
 
-  @override
-  Stream<OffersState> mapEventToState(
-    OffersEvent event,
-  ) async* {}
+  OffersBloc({required AuthBloc auth})
+      : _authBloc = auth,
+        super(OffersInitial());
 }

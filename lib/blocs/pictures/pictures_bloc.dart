@@ -18,50 +18,34 @@ class PicturesBloc extends Bloc<PicturesEvent, PicturesState> {
       {required AuthBloc auth, required PicturesRepository picturesRepository})
       : _authBloc = auth,
         _picturesRepository = picturesRepository,
-        super(PicturesIdle(""));
+        super(PicturesIdle("")) {
+    on<FetchProfilePictureURI>((event, emit) {
+      final AuthState authState = _authBloc.state;
+      if (authState is Authenticated) {
+        emit(PicturesIdle(authState.user.photo ?? ""));
+      }
+    });
 
-  @override
-  Stream<PicturesState> mapEventToState(
-    PicturesEvent event,
-  ) async* {
-    if (event is FetchProfilePictureURI) {
-      yield* mapFetchProfilePictureURIToState(event);
-    } else if (event is UploadProfilePicture) {
-      yield* mapUploadProfilePictureToState(event);
-    } else if (event is ClearProfilePicture) {
-      yield* mapClearProfilePictureToState();
-    }
-  }
+    on<UploadProfilePicture>((event, emit) async {
+      emit(PicturesFetching());
+      final AuthState authState = _authBloc.state;
+      if (authState is Authenticated) {
+        String resourceLocation = await _picturesRepository
+            .uploadProfilePicture(authState.user, event.payload);
+        _authBloc.add(UpdateProfilePictureURI(resourceLocation));
+      }
+    });
 
-  Stream<PicturesState> mapFetchProfilePictureURIToState(
-      FetchProfilePictureURI event) async* {
-    final AuthState authState = _authBloc.state;
-    if (authState is Authenticated) {
-      yield PicturesIdle(authState.user.photo ?? "");
-    }
-  }
-
-  Stream<PicturesState> mapUploadProfilePictureToState(
-      UploadProfilePicture event) async* {
-    yield PicturesFetching();
-
-    final AuthState authState = _authBloc.state;
-    if (authState is Authenticated) {
-      String resourceLocation = await _picturesRepository.uploadProfilePicture(
-          authState.user, event.payload);
-      _authBloc.add(UpdateProfilePictureURI(resourceLocation));
-    }
-  }
-
-  Stream<PicturesState> mapClearProfilePictureToState() async* {
-    final AuthState authState = _authBloc.state;
-    if (authState is Authenticated) {
-      try {
-        _picturesRepository.clearProfilePicture(authState.user);
-      } catch (e) {}
-      _authBloc.add(UpdateProfilePictureURI(null));
-    } else {
-      throw UserNotLoggedInException();
-    }
+    on<ClearProfilePicture>((event, emit) {
+      final AuthState authState = _authBloc.state;
+      if (authState is Authenticated) {
+        try {
+          _picturesRepository.clearProfilePicture(authState.user);
+        } catch (e) {}
+        _authBloc.add(UpdateProfilePictureURI(null));
+      } else {
+        throw UserNotLoggedInException();
+      }
+    });
   }
 }

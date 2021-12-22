@@ -64,7 +64,7 @@ class SparkApp extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider.value(value: _authRepository),
-        RepositoryProvider.value(value: _picturesRepository),
+        // RepositoryProvider.value(value: _picturesRepository),
       ],
       child: BlocProvider(
         lazy: false,
