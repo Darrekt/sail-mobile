@@ -3,4 +3,5 @@
 	<string name="app_name">Spark</string>
 	<string name="facebook_app_id">567150977757615</string>
 	<string name="fb_login_protocol_scheme">fb567150977757615</string>
+	<string name="facebook_client_token">87affbd1d174e2531897125593d8da27</string>
 </resources>

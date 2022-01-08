@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:sail/components/util/ErrorToast.dart';
 import 'package:sail/models/SparkUser.dart';
 import 'package:sail/repositories/auth/auth_repository.dart';
@@ -63,6 +64,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _auth.authenticateGoogle();
       } on LogInWithGoogleFailure catch (e) {
         showErrorToast(e.message);
+      } on PlatformException catch (e) {
+        showErrorToast(e.message ?? "Platform Error occurred.");
       }
     });
 

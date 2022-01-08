@@ -34,12 +34,12 @@ Future<void> main() async {
   final PicturesRepository picRepo = FirebasePicturesRepository();
 
   // Use emulators in debug mode
-  if (kDebugMode) {
-    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-    FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
-    await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
-  }
+  // if (kDebugMode) {
+  //   await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  //   FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  //   FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  //   await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
+  // }
 
   runApp(SparkApp(
     authRepository: authRepo,
