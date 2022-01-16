@@ -56,20 +56,17 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          late final String textPrompt;
-          final Widget textPromptDisplay = Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.height * 0.07),
-            child: AutoSizeText(
-              "Set your name below:",
-              minFontSize: 20,
-            ),
-          );
-
           final Widget nameField = TextFormField(
             controller: _nameController,
             decoration: const InputDecoration(labelText: 'New display name'),
             focusNode: _nameFocus,
+            onEditingComplete: _submitForm,
+          );
+
+          final Widget locationField = TextFormField(
+            controller: _locationController,
+            decoration: const InputDecoration(labelText: 'Set your location'),
+            focusNode: _locationFocus,
             onEditingComplete: _submitForm,
           );
 
@@ -119,26 +116,33 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
             },
           );
 
+          late final String textPrompt;
           late final List<Widget> displayFields;
 
           switch (widget.choice) {
             case ProfileParticulars.Name:
-              textPrompt = "Change your display name below:";
+              textPrompt = "Change your display name:";
               displayFields = [nameField];
               break;
             case ProfileParticulars.Location:
-              textPrompt = "Set your location here:";
-              displayFields = [emailField, confirmEmailField];
+              textPrompt = "Set your location:";
+              displayFields = [locationField];
               break;
             case ProfileParticulars.Email:
-              textPrompt = "Change your email below:";
+              textPrompt = "Change your email:";
               displayFields = [emailField, confirmEmailField];
               break;
             case ProfileParticulars.Password:
-              textPrompt = "Change your password below";
+              textPrompt = "Change your password";
               displayFields = [passwordField, confirmPasswordField];
               break;
           }
+
+          final Widget textPromptDisplay = Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.height * 0.07),
+            child: AutoSizeText(textPrompt, minFontSize: 20),
+          );
 
           final Widget completeButton = Container(
             padding: EdgeInsets.symmetric(
