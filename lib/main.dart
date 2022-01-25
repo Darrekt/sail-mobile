@@ -24,10 +24,6 @@ import 'package:sail/repositories/pictures/pictures_repository.dart';
 import 'package:sail/repositories/pictures/pictures_repository_firebase.dart';
 
 Future<void> main() async {
-  BlocOverrides.runZoned(
-    () {},
-    blocObserver: SparkBlocObserver(),
-  );
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final AuthRepository authRepo = FirebaseAuthRepository();
@@ -41,10 +37,15 @@ Future<void> main() async {
     await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
   }
 
-  runApp(SparkApp(
-    authRepository: authRepo,
-    picturesRepository: picRepo,
-  ));
+  BlocOverrides.runZoned(
+    () {
+      runApp(SparkApp(
+        authRepository: authRepo,
+        picturesRepository: picRepo,
+      ));
+    },
+    blocObserver: SparkBlocObserver(),
+  );
 }
 
 class SparkApp extends StatelessWidget {
