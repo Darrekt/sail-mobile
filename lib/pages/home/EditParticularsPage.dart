@@ -26,6 +26,8 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
   late FocusNode _pwFocus = FocusNode();
   late FocusNode _cpwFocus = FocusNode();
 
+  late AuthEvent action;
+
   @override
   void dispose() {
     _nameFocus.dispose();
@@ -41,7 +43,6 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
   Widget build(BuildContext context) {
     late final String textPrompt;
     late final List<Widget> displayFields;
-    late final AuthEvent action;
 
     _submitForm(AuthEvent submitAction) => () => {
           if (_formKey.currentState!.validate())
@@ -60,27 +61,33 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
         builder: (context, state) {
           switch (widget.choice) {
             case ProfileParticulars.Name:
-              action = UpdateDisplayName(_nameController.text);
               textPrompt = "Change your display name:";
+              action = UpdateDisplayName(_nameController.text);
               displayFields = [
                 TextFormField(
                   controller: _nameController,
                   decoration:
                       const InputDecoration(labelText: 'New display name'),
                   focusNode: _nameFocus,
+                  onChanged: (_) => setState(() {
+                    action = UpdateDisplayName(_nameController.text);
+                  }),
                   onEditingComplete: _submitForm(action),
                 )
               ];
               break;
             case ProfileParticulars.Location:
-              action = UpdateLocation(_locationController.text);
               textPrompt = "Set your location:";
+              action = UpdateLocation(_locationController.text);
               displayFields = [
                 TextFormField(
                   controller: _locationController,
                   decoration:
                       const InputDecoration(labelText: 'Set your location'),
                   focusNode: _locationFocus,
+                  onChanged: (_) => setState(() {
+                    action = UpdateLocation(_locationController.text);
+                  }),
                   onEditingComplete: _submitForm(action),
                 )
               ];
@@ -93,6 +100,9 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'New email'),
                   focusNode: _emailFocus,
+                  onChanged: (_) => setState(() {
+                    action = UpdateEmail(_emailController.text);
+                  }),
                   onEditingComplete: _confirmEmailFocus.requestFocus,
                   validator: emailValidator,
                 ),
@@ -115,6 +125,9 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
                   decoration: const InputDecoration(labelText: 'New password'),
                   obscureText: true,
                   focusNode: _pwFocus,
+                  onChanged: (_) => setState(() {
+                    action = UpdatePassword(_passwordController.text);
+                  }),
                   onEditingComplete: _cpwFocus.requestFocus,
                   validator: (value) {
                     if (value == null || value.isEmpty)

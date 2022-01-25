@@ -24,7 +24,7 @@ class FirebaseAuthRepository implements AuthRepository {
   User? _user;
 
   FirebaseAuthRepository() {
-    _userSub = _firebaseAuth.authStateChanges().listen((user) async {
+    _userSub = _firebaseAuth.userChanges().listen((user) async {
       _user = user;
       if (user != null) {
         await usersRef.doc(user.uid).set(
@@ -150,6 +150,35 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
+  Future<void> updateDisplayName(String name) async {
+    if (_user != null) {
+      print("Name change requested: $name");
+      await _user!.updateDisplayName(name);
+    } else
+      throw UserNotLoggedInException();
+  }
+
+  Future<void> updateLocation(String location) async {
+    if (_user != null)
+      print(location);
+    else
+      throw UserNotLoggedInException();
+  }
+
+  Future<void> updateEmail(String email) async {
+    if (_user != null)
+      await _user!.updateEmail(email);
+    else
+      throw UserNotLoggedInException();
+  }
+
+  Future<void> updatePassword(String password) async {
+    if (_user != null)
+      await _user!.updatePassword(password);
+    else
+      throw UserNotLoggedInException();
+  }
+
   Future<void> updateProfilePictureURI(String? uri) async {
     if (_user != null)
       await _user!.updatePhotoURL(uri);
@@ -178,20 +207,6 @@ class FirebaseAuthRepository implements AuthRepository {
       'name': _user?.displayName ?? "Anon",
     });
     print(result.toString());
-  }
-
-  Future<void> setupPairing(String email) {
-    // Request cloud functions to write an OTP
-    //  OTP should be valid for no longer than a minute
-    // Send OTP to partner via cloud messaging
-    throw NotImplementedException();
-  }
-
-  Future<void> tryPairingOTP(String email, String otp) {
-    // Send OTP to the endpoint, cloud function validates OTP against firebase.
-
-    // If successful write to both users' partnerId field and trigger listeners on both clients.
-    throw NotImplementedException();
   }
 
   // Not sure, searched high and low for how to cancel StreamSubscriptions in non-widget classes in Dart.

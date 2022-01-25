@@ -77,8 +77,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+    on<UpdateDisplayName>((event, emit) => _auth.updateDisplayName(event.name));
+
+    on<UpdateLocation>((event, emit) => _auth.updateLocation(event.location));
+
+    on<UpdateEmail>((event, emit) => _auth.updateEmail(event.email));
+
+    on<UpdatePassword>((event, emit) => _auth.updatePassword(event.password));
+
     on<UpdateProfilePictureURI>(
         (event, emit) => _auth.updateProfilePictureURI(event.payload));
+
     on<Logout>((event, emit) => _auth.logout());
   }
 

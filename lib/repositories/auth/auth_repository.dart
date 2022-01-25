@@ -1,3 +1,4 @@
+import 'package:sail/blocs/auth/auth_bloc.dart';
 import 'package:sail/models/SparkUser.dart';
 import 'package:sail/util/exceptions/SailException.dart';
 
@@ -94,7 +95,19 @@ abstract class AuthRepository {
     throw NotImplementedException();
   }
 
-  Future<void> tryPairingOTP(String email, String otp) {
+  Future<void> updateDisplayName(String name) async {
+    throw NotImplementedException();
+  }
+
+  Future<void> updateLocation(String location) async {
+    throw NotImplementedException();
+  }
+
+  Future<void> updateEmail(String email) async {
+    throw NotImplementedException();
+  }
+
+  Future<void> updatePassword(String password) async {
     throw NotImplementedException();
   }
 
