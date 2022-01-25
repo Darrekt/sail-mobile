@@ -61,4 +61,48 @@ class UpdateProfilePictureURI extends AuthEvent {
   String toString() => "UpdateProfilePictureURI { payload: $payload }";
 }
 
+class UpdateDisplayName extends AuthEvent {
+  final String name;
+  UpdateDisplayName(this.name);
+
+  @override
+  List<Object> get props => [this.name];
+
+  @override
+  String toString() => "UpdateDisplayName { name: $name }";
+}
+
+class UpdateLocation extends AuthEvent {
+  final String location;
+  UpdateLocation(this.location);
+
+  @override
+  List<Object> get props => [this.location];
+
+  @override
+  String toString() => "UpdateLocation { location: $location }";
+}
+
+class UpdateEmail extends AuthEvent {
+  final String email;
+  UpdateEmail(this.email);
+
+  @override
+  List<Object> get props => [this.email];
+
+  @override
+  String toString() => "UpdateEmail { email: $email }";
+}
+
+class UpdatePassword extends AuthEvent {
+  final String password;
+  UpdatePassword(this.password);
+
+  @override
+  List<Object> get props => [this.password];
+
+  @override
+  String toString() => "UpdatePassword { password: $password }";
+}
+
 class Logout extends AuthEvent {}

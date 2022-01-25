@@ -39,12 +39,14 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> _submitForm() async {
-      if (_formKey.currentState!.validate()) {
-        context.read<AuthBloc>().add(
-            TryEmailSignUp(_emailController.text, _passwordController.text));
-      }
-    }
+    late final String textPrompt;
+    late final List<Widget> displayFields;
+    late final AuthEvent action;
+
+    _submitForm(AuthEvent submitAction) => () => {
+          if (_formKey.currentState!.validate())
+            {context.read<AuthBloc>().add(submitAction)}
+        };
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -56,85 +58,87 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          final Widget nameField = TextFormField(
-            controller: _nameController,
-            decoration: const InputDecoration(labelText: 'New display name'),
-            focusNode: _nameFocus,
-            onEditingComplete: _submitForm,
-          );
-
-          final Widget locationField = TextFormField(
-            controller: _locationController,
-            decoration: const InputDecoration(labelText: 'Set your location'),
-            focusNode: _locationFocus,
-            onEditingComplete: _submitForm,
-          );
-
-          final Widget emailField = TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: 'New email'),
-            focusNode: _emailFocus,
-            onEditingComplete: _confirmEmailFocus.requestFocus,
-            validator: emailValidator,
-          );
-
-          final Widget confirmEmailField = TextFormField(
-            controller: _confirmEmailController,
-            decoration: const InputDecoration(labelText: 'Confirm new email'),
-            focusNode: _emailFocus,
-            onEditingComplete: _submitForm,
-            validator: emailValidator,
-          );
-
-          final Widget passwordField = TextFormField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: 'New password'),
-            obscureText: true,
-            focusNode: _pwFocus,
-            onEditingComplete: _cpwFocus.requestFocus,
-            validator: (value) {
-              if (value == null || value.isEmpty)
-                return 'Please enter your password';
-              return null;
-            },
-          );
-
-          final Widget confirmPasswordField = TextFormField(
-            controller: _confirmPasswordController,
-            decoration:
-                const InputDecoration(labelText: 'Confirm new password'),
-            obscureText: true,
-            focusNode: _cpwFocus,
-            onEditingComplete: _submitForm,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please confirm your password';
-              } else if (value != _passwordController.text) {
-                return 'Non-matching password';
-              }
-              return null;
-            },
-          );
-
-          late final String textPrompt;
-          late final List<Widget> displayFields;
-
           switch (widget.choice) {
             case ProfileParticulars.Name:
+              action = UpdateDisplayName(_nameController.text);
               textPrompt = "Change your display name:";
-              displayFields = [nameField];
+              displayFields = [
+                TextFormField(
+                  controller: _nameController,
+                  decoration:
+                      const InputDecoration(labelText: 'New display name'),
+                  focusNode: _nameFocus,
+                  onEditingComplete: _submitForm(action),
+                )
+              ];
               break;
             case ProfileParticulars.Location:
+              action = UpdateLocation(_locationController.text);
               textPrompt = "Set your location:";
-              displayFields = [locationField];
+              displayFields = [
+                TextFormField(
+                  controller: _locationController,
+                  decoration:
+                      const InputDecoration(labelText: 'Set your location'),
+                  focusNode: _locationFocus,
+                  onEditingComplete: _submitForm(action),
+                )
+              ];
               break;
             case ProfileParticulars.Email:
+              action = UpdateEmail(_confirmEmailController.text);
               textPrompt = "Change your email:";
-              displayFields = [emailField, confirmEmailField];
+              displayFields = [
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'New email'),
+                  focusNode: _emailFocus,
+                  onEditingComplete: _confirmEmailFocus.requestFocus,
+                  validator: emailValidator,
+                ),
+                TextFormField(
+                  controller: _confirmEmailController,
+                  decoration:
+                      const InputDecoration(labelText: 'Confirm new email'),
+                  focusNode: _emailFocus,
+                  onEditingComplete: _submitForm(action),
+                  validator: emailValidator,
+                )
+              ];
               break;
             case ProfileParticulars.Password:
+              action = UpdatePassword(_confirmPasswordController.text);
               textPrompt = "Change your password";
-              displayFields = [passwordField, confirmPasswordField];
+              displayFields = [
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(labelText: 'New password'),
+                  obscureText: true,
+                  focusNode: _pwFocus,
+                  onEditingComplete: _cpwFocus.requestFocus,
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Please enter your password';
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  decoration:
+                      const InputDecoration(labelText: 'Confirm new password'),
+                  obscureText: true,
+                  focusNode: _cpwFocus,
+                  onEditingComplete: _submitForm(action),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your password';
+                    } else if (value != _passwordController.text) {
+                      return 'Non-matching password';
+                    }
+                    return null;
+                  },
+                )
+              ];
               break;
           }
 
@@ -149,7 +153,7 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
                 vertical: MediaQuery.of(context).size.height * 0.03),
             alignment: Alignment.center,
             child: ElevatedButton(
-              onPressed: _submitForm,
+              onPressed: _submitForm(action),
               child: AutoSizeText(
                 "Save Changes",
                 minFontSize: 16,
