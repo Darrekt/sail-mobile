@@ -18,8 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         super(AppLoading()) {
     on<AppStarted>((event, emit) {
       if (_userSubscription != null) _userSubscription!.cancel();
-      _userSubscription = _auth.getUser().listen((SparkUser update) {
-        add(AuthStateUpdated(update));
+      _userSubscription = _auth.getUser().listen((SparkUser updatedUser) {
+        add(AuthStateUpdated(updatedUser));
       });
     });
 

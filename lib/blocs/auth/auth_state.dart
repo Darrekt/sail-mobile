@@ -26,7 +26,7 @@ class Authenticated extends AuthState {
   Authenticated(this.user);
 
   @override
-  List<Object> get props => [user.id];
+  List<Object> get props => [user];
 
   @override
   String toString() => "Authenticated { user: $user }";

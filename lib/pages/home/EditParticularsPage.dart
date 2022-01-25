@@ -41,12 +41,14 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
 
   @override
   Widget build(BuildContext context) {
-    late final String textPrompt;
-    late final List<Widget> displayFields;
+    late String textPrompt;
+    late List<Widget> displayFields;
 
-    _submitForm(AuthEvent submitAction) => () => {
-          if (_formKey.currentState!.validate())
-            {context.read<AuthBloc>().add(submitAction)}
+    _submitForm(AuthEvent submitAction) => () {
+          if (_formKey.currentState!.validate()) {
+            context.read<AuthBloc>().add(submitAction);
+            Navigator.pop(context);
+          }
         };
 
     return Scaffold(
