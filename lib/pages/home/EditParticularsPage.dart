@@ -95,7 +95,7 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
               ];
               break;
             case ProfileParticulars.Email:
-              action = UpdateEmail(_confirmEmailController.text);
+              action = UpdateEmail(_emailController.text);
               textPrompt = "Change your email:";
               displayFields = [
                 TextFormField(
@@ -112,14 +112,22 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
                   controller: _confirmEmailController,
                   decoration:
                       const InputDecoration(labelText: 'Confirm new email'),
-                  focusNode: _emailFocus,
+                  focusNode: _confirmEmailFocus,
                   onEditingComplete: _submitForm(action),
-                  validator: emailValidator,
+                  validator: (value) {
+                    String? checkEntry = emailValidator(value);
+                    if (checkEntry == null)
+                      return value != _emailController.text
+                          ? 'Unmatching emails'
+                          : null;
+                    else
+                      return checkEntry;
+                  },
                 )
               ];
               break;
             case ProfileParticulars.Password:
-              action = UpdatePassword(_confirmPasswordController.text);
+              action = UpdatePassword(_passwordController.text);
               textPrompt = "Change your password";
               displayFields = [
                 TextFormField(
@@ -148,7 +156,7 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please confirm your password';
                     } else if (value != _passwordController.text) {
-                      return 'Non-matching password';
+                      return 'Non-matching passwords';
                     }
                     return null;
                   },
