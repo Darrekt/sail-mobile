@@ -52,7 +52,9 @@ class UserDisplay extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             AutoSizeText(
-              user == SparkUser.empty ? "Click to pair!" : "Singapore",
+              user == SparkUser.empty
+                  ? "Click to pair!"
+                  : user.location ?? "Set your location!",
               minFontSize: 8,
               maxFontSize: 10,
             ),

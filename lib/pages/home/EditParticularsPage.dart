@@ -12,7 +12,6 @@ class EditParticularsPage extends StatefulWidget {
 class _EditParticularsPageState extends State<EditParticularsPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _confirmEmailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -20,18 +19,16 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
       TextEditingController();
 
   late FocusNode _nameFocus = FocusNode();
-  late FocusNode _locationFocus = FocusNode();
   late FocusNode _emailFocus = FocusNode();
   late FocusNode _confirmEmailFocus = FocusNode();
   late FocusNode _pwFocus = FocusNode();
   late FocusNode _cpwFocus = FocusNode();
 
-  late AuthEvent action;
+  AuthEvent? action;
 
   @override
   void dispose() {
     _nameFocus.dispose();
-    _locationFocus.dispose();
     _emailController.dispose();
     _confirmEmailController.dispose();
     _passwordController.dispose();
@@ -44,8 +41,9 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
     late String textPrompt;
     late List<Widget> displayFields;
 
-    _submitForm(AuthEvent submitAction) => () {
-          if (_formKey.currentState!.validate()) {
+    _submitForm(AuthEvent? submitAction) => () {
+          print("SUBMITTED: $submitAction");
+          if (_formKey.currentState!.validate() && submitAction != null) {
             context.read<AuthBloc>().add(submitAction);
             Navigator.pop(context);
           }
@@ -64,7 +62,6 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
           switch (widget.choice) {
             case ProfileParticulars.Name:
               textPrompt = "Change your display name:";
-              action = UpdateDisplayName(_nameController.text);
               displayFields = [
                 TextFormField(
                   controller: _nameController,
@@ -80,22 +77,29 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
               break;
             case ProfileParticulars.Location:
               textPrompt = "Set your location:";
-              action = UpdateLocation(_locationController.text);
               displayFields = [
-                TextFormField(
-                  controller: _locationController,
-                  decoration:
-                      const InputDecoration(labelText: 'Set your location'),
-                  focusNode: _locationFocus,
-                  onChanged: (_) => setState(() {
-                    action = UpdateLocation(_locationController.text);
+                // TextFormField(
+                //   controller: _locationController,
+                //   decoration:
+                //       const InputDecoration(labelText: 'Set your location'),
+                //   focusNode: _locationFocus,
+                //   onChanged: (_) => setState(() {
+                //     action = UpdateLocation(_locationController.text);
+                //   }),
+                //   onEditingComplete: _submitForm(action),
+                // )
+                CountryCodePicker(
+                  onChanged: (value) => setState(() {
+                    action = UpdateLocation(value.name);
                   }),
-                  onEditingComplete: _submitForm(action),
-                )
+                  searchDecoration: const InputDecoration(
+                      labelText: 'Search by country code'),
+                  showCountryOnly: true,
+                  showOnlyCountryWhenClosed: true,
+                ),
               ];
               break;
             case ProfileParticulars.Email:
-              action = UpdateEmail(_emailController.text);
               textPrompt = "Change your email:";
               displayFields = [
                 TextFormField(
@@ -127,7 +131,6 @@ class _EditParticularsPageState extends State<EditParticularsPage> {
               ];
               break;
             case ProfileParticulars.Password:
-              action = UpdatePassword(_passwordController.text);
               textPrompt = "Change your password";
               displayFields = [
                 TextFormField(

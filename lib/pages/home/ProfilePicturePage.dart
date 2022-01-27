@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -89,7 +90,7 @@ class ProfilePicturePage extends StatelessWidget {
                 ),
                 SettingsGroup(
                   title: "Location",
-                  subtitle: "Singapore",
+                  subtitle: state.user.location ?? "Set your location!",
                   onTrailingCallback: () =>
                       editProfileField(ProfileParticulars.Location),
                 ),

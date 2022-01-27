@@ -27,10 +27,18 @@ class FirebaseAuthRepository implements AuthRepository {
     _userSub = _firebaseAuth.userChanges().listen((user) async {
       _user = user;
       if (user != null) {
+        // partnerId and location are not managed by auth, so we shall not set them.
         await usersRef.doc(user.uid).set(
             SparkUser(firebaseUser: user)
                 .copyWith(registrationToken: await messaging.getToken()),
-            SetOptions(mergeFields: ['registrationToken']));
+            SetOptions(mergeFields: [
+              'email',
+              'emailVerified',
+              'id',
+              'name',
+              'photo',
+              'registrationToken'
+            ]));
       }
     });
   }
@@ -44,6 +52,7 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   Stream<SparkUser> getUser() async* {
+    // TODO: modify this stream to also add events for the firestore changes
     yield* _firebaseAuth
         .userChanges()
         .map((event) => SparkUser(firebaseUser: event));
@@ -151,17 +160,18 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   Future<void> updateDisplayName(String name) async {
-    if (_user != null) {
-      print("Name change requested: $name");
+    if (_user != null)
       await _user!.updateDisplayName(name);
-    } else
+    else
       throw UserNotLoggedInException();
   }
 
-  Future<void> updateLocation(String location) async {
-    if (_user != null)
-      print(location);
-    else
+  Future<void> updateLocation(String? location) async {
+    if (_user != null) {
+      await usersRef.doc(_user?.uid).set(
+          SparkUser(firebaseUser: _user).copyWith(location: location),
+          SetOptions(mergeFields: ['location']));
+    } else
       throw UserNotLoggedInException();
   }
 

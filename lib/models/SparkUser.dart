@@ -15,6 +15,7 @@ class SparkUser extends Equatable {
     this.email,
     this.emailVerified = false,
     this.name,
+    this.location,
     this.photo,
   });
 
@@ -22,12 +23,13 @@ class SparkUser extends Equatable {
     return firebaseUser != null
         ? SparkUser.fromScratch(
             id: firebaseUser.uid,
-            registrationToken: null,
-            partnerId: null,
             email: firebaseUser.email,
             emailVerified: firebaseUser.emailVerified,
             name: firebaseUser.displayName,
             photo: firebaseUser.photoURL,
+            registrationToken: null,
+            partnerId: null,
+            location: null,
           )
         : SparkUser.empty;
   }
@@ -39,6 +41,7 @@ class SparkUser extends Equatable {
         emailVerified = json['emailVerified'] as bool,
         partnerId = json['partnerId'] as String?,
         name = json['name'] as String?,
+        location = json['location'] as String?,
         photo = json['photo'] as String?;
 
   SparkUser copyWith(
@@ -47,6 +50,7 @@ class SparkUser extends Equatable {
           String? email,
           bool? emailVerified,
           String? name,
+          String? location,
           String? photo}) =>
       SparkUser.fromScratch(
         id: this.id,
@@ -55,6 +59,7 @@ class SparkUser extends Equatable {
         email: email ?? this.email,
         emailVerified: emailVerified ?? this.emailVerified,
         name: name ?? this.name,
+        location: location ?? this.location,
         photo: this.photo,
       );
 
@@ -66,6 +71,7 @@ class SparkUser extends Equatable {
       'email': email,
       'emailVerified': emailVerified,
       'name': name,
+      'location': location,
       'photo': photo,
     };
   }
@@ -88,6 +94,9 @@ class SparkUser extends Equatable {
   /// The current user's name (display name).
   final String? name;
 
+  /// The current user's name (display name).
+  final String? location;
+
   /// Url for the current user's photo.
   final String? photo;
 
@@ -101,5 +110,5 @@ class SparkUser extends Equatable {
   bool get isNotEmpty => this != SparkUser.empty;
 
   @override
-  List<Object?> get props => [id, partnerId, email, name, photo];
+  List<Object?> get props => [id, partnerId, email, name, location, photo];
 }

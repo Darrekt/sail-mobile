@@ -4,7 +4,7 @@ abstract class AuthEvent extends Equatable {
   const AuthEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class AppStarted extends AuthEvent {}
@@ -73,11 +73,11 @@ class UpdateDisplayName extends AuthEvent {
 }
 
 class UpdateLocation extends AuthEvent {
-  final String location;
+  final String? location;
   UpdateLocation(this.location);
 
   @override
-  List<Object> get props => [this.location];
+  List<Object?> get props => [this.location];
 
   @override
   String toString() => "UpdateLocation { location: $location }";

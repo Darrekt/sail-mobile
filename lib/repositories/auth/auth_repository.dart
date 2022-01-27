@@ -99,7 +99,7 @@ abstract class AuthRepository {
     throw NotImplementedException();
   }
 
-  Future<void> updateLocation(String location) async {
+  Future<void> updateLocation(String? location) async {
     throw NotImplementedException();
   }
 
