@@ -1,4 +1,3 @@
-import 'package:sail/blocs/auth/auth_bloc.dart';
 import 'package:sail/models/SparkUser.dart';
 import 'package:sail/util/exceptions/SailException.dart';
 

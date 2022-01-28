@@ -19,12 +19,27 @@ class FirebaseAuthRepository implements AuthRepository {
       .withConverter<SparkUser>(
           fromFirestore: (doc, _) => SparkUser.fromJson(doc.data()!),
           toFirestore: (user, _) => user.toJson());
+  late final StreamController<SparkUser> userStream;
 
-  late StreamSubscription _userSub;
   User? _user;
 
   FirebaseAuthRepository() {
-    _userSub = _firebaseAuth.userChanges().listen((user) async {
+    // TODO: Should the subscriptions below be cancelled?
+    userStream = StreamController<SparkUser>(
+      onListen: () {
+        _firebaseAuth.userChanges().listen((event) {
+          userStream.add(SparkUser(firebaseUser: event));
+        });
+
+        usersRef.doc(_user?.uid).snapshots().listen((event) {
+          print("FIRESTORE UPDATE DETECTED: ${event.data()}");
+          userStream.add(event.data()!);
+        });
+      },
+      onCancel: () {},
+    );
+
+    _firebaseAuth.userChanges().listen((user) async {
       _user = user;
       if (user != null) {
         // partnerId and location are not managed by auth, so we shall not set them.
@@ -51,12 +66,7 @@ class FirebaseAuthRepository implements AuthRepository {
     if (_user != null) await _user!.reload();
   }
 
-  Stream<SparkUser> getUser() async* {
-    // TODO: modify this stream to also add events for the firestore changes
-    yield* _firebaseAuth
-        .userChanges()
-        .map((event) => SparkUser(firebaseUser: event));
-  }
+  Stream<SparkUser> getUser() => userStream.stream;
 
   Stream<SparkUser> getPartner(SparkUser user) async* {
     // bool loggedIn = await isAuthenticated();
@@ -218,7 +228,4 @@ class FirebaseAuthRepository implements AuthRepository {
     });
     print(result.toString());
   }
-
-  // Not sure, searched high and low for how to cancel StreamSubscriptions in non-widget classes in Dart.
-  void dispose() => _userSub.cancel();
 }
